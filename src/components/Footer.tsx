@@ -1,0 +1,59 @@
+import Image from "next/image";
+import Link from "next/link";
+import { navigationLinks } from "./Header/navigationLinks";
+
+export default function Footer() {
+	return (
+		<footer className="bg-(--main-dark-color) text-white pt-8 p-4 md:px-8">
+			<div className="flex flex-col md:flex-row justify-between gap-4 md:gap-8 max-w-360 mx-auto">
+				<div className="flex justify-center items-center">
+                    <Image src={"/assets/global/logo2.png"} alt="Gynocare" width={300} height={150} className="mb-8" />
+                </div>
+
+				<div className="hidden md:flex flex-col">
+					<h2 className="text-lg font-semibold">Navegação</h2>
+
+					{navigationLinks.map((navLink) => (
+						<Link key={navLink.href} href={navLink.href}>
+							{navLink.label}
+						</Link>
+					))}
+				</div>
+
+				<div>
+					<div className="flex flex-col mb-2">
+						<h2 className="text-lg font-semibold">Central de Relacionamento</h2>
+
+						<a href="" className="underline">(61) 3388-7310</a>
+						<a href="" className="underline">(61) 3388-7310</a>
+						<a href="">clinicagynocare.df@gmail.com</a>
+					</div>
+
+					<div className="flex flex-col mb-2">
+						<h2 className="text-lg font-semibold">Horário de Atendimento</h2>
+
+						<p>Seg - Sex - 8h às 18h</p>
+						<p>Sábados - 8h às 12h</p>
+					</div>
+
+					<div>
+						<h2 className="text-lg font-semibold">Endereço</h2>
+						<p className="w-80">Avenida Independência, Quadra 2, Bloco G - Planaltina/DF CEP: 73310-317</p>
+					</div>
+				</div>
+			</div>
+
+            <div className="max-w-360 mx-auto py-4">
+                <small>© 2020 - CLÍNICA GYNOCARE - Todos os Direitos Reservados.</small>
+            </div>
+
+            <a href="" className="fixed bottom-8 right-28 block p-4 bg-(--main-color) rounded-full shadow shadow-black">
+                <Image src={"/assets/icons/ringTel.png"} alt={"Contato"} width={32} height={32} />
+            </a>
+
+            <a href="" className="fixed bottom-8 right-8 block p-4 bg-(--main-color) rounded-full shadow shadow-black">
+                <Image src={"/assets/icons/bot.png"} alt={"Chatbot"} width={32} height={32} />
+            </a>
+		</footer>
+	);
+}
