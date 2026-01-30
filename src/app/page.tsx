@@ -1,11 +1,102 @@
+import Image from "next/image";
+import Link from "next/link";
+import InfoCards from "@/components/InfoCards";
+
 export default function Home() {
     return (
         <main>
-            <section className="p-8 px-4 md:px-8">
-                <div className="max-w-360 mx-auto">
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rem facilis eligendi inventore dolorum ipsum ad incidunt cumque commodi, dolores laboriosam, harum illo quidem. Consequatur praesentium dolorum voluptate voluptas ullam atque nesciunt, porro et quae laudantium iusto error incidunt dolores blanditiis perferendis aut omnis ipsa, aspernatur sapiente aperiam officiis esse! Porro iusto perspiciatis at earum. Odit accusamus dolores consectetur a quae necessitatibus, quam autem mollitia possimus minus dicta voluptatibus repellendus rerum velit doloribus delectus labore eius at minima maiores quo dignissimos alias in officiis? Obcaecati facilis cumque vero ducimus laborum hic temporibus, ut ullam corrupti ab eius animi voluptatem at tempora similique provident quo odio ratione ea architecto nobis qui aspernatur natus. Suscipit corporis ex modi, qui necessitatibus deserunt expedita natus voluptates aspernatur ea nesciunt dolorem repudiandae odit illo veniam odio ipsam iure eius omnis nam, obcaecati assumenda sit fugiat quaerat! Cupiditate dignissimos quod commodi pariatur ipsam iure. Iusto, asperiores repudiandae? Illo porro corrupti deserunt unde, eos aliquam quas consequuntur natus quos fuga tenetur at nemo? Asperiores magni non ullam veniam accusantium magnam aliquam provident necessitatibus at neque quis dolores expedita, reiciendis autem quisquam iste itaque maiores rerum deleniti sunt distinctio. Obcaecati aperiam modi molestias est esse labore, sapiente temporibus non commodi ducimus quisquam magni velit assumenda odio laudantium earum expedita mollitia ipsa inventore adipisci porro sit neque numquam! Quaerat sunt placeat praesentium facilis voluptas. Ad impedit error sit delectus quisquam sint inventore cum earum consectetur fugit necessitatibus quo in recusandae cumque minima id repellendus vero dicta debitis laudantium at, saepe ea! Explicabo temporibus praesentium, nam officia quos iure distinctio magni quaerat quasi deleniti perspiciatis ipsam corporis ducimus ratione numquam veritatis ipsa fuga et asperiores totam? Dolores ab incidunt neque. Quos, neque blanditiis eaque nihil voluptatum suscipit esse sint quidem est, dolores, eveniet excepturi nam! Omnis ab, rerum amet aliquid laborum eligendi cum qui asperiores natus sed a vel dolorum vero quo nostrum magni, praesentium voluptate commodi ullam sunt? Consequuntur neque veniam nam, suscipit, error nobis quaerat delectus minus ex tempore nemo modi, eius reprehenderit mollitia rem architecto hic iusto similique? Minima in odio sit aspernatur porro dolorem nesciunt quidem vero, quam velit consectetur assumenda ullam dolore? Architecto rerum ad, assumenda incidunt illum fugiat! Commodi similique hic cupiditate temporibus facere, culpa veritatis a! Tempore laborum consequuntur quisquam doloremque aliquam iste nam commodi, sunt corrupti quis officia obcaecati odio accusamus perspiciatis iure. Autem hic, maiores, quos fuga voluptatum natus harum aliquam sint tenetur nisi perspiciatis magnam ipsa iste dolor porro perferendis, illo sapiente minima fugit eligendi? Culpa cumque fuga ipsam nobis. Nisi qui magni culpa perferendis incidunt quisquam, maxime nam placeat fuga suscipit explicabo quaerat? Labore cupiditate doloremque mollitia accusamus nemo incidunt laborum blanditiis neque eum? Atque facilis hic molestias amet quasi iste eligendi provident omnis. Corrupti voluptatem consequatur ratione et sequi placeat a quos rem. Neque dolore voluptatibus aut ut voluptatum itaque ullam amet obcaecati voluptatem aliquam? Dolores, molestias perferendis sunt omnis quod quis esse perspiciatis vero voluptates saepe laboriosam qui quae cumque obcaecati ad deserunt? At, neque debitis praesentium soluta quasi adipisci explicabo officia ad dolorem nesciunt in velit tempore accusantium nulla nihil cum voluptatum exercitationem voluptate a deleniti ipsa ducimus. Voluptas et expedita odit, cumque quisquam aliquam quam iure, id, vitae laboriosam tempore deserunt doloribus magnam magni omnis. Nostrum saepe rerum voluptas voluptatum facere voluptatibus molestias at nisi soluta quo est dolorum, animi aspernatur ratione adipisci sed repellat voluptate, fugiat officiis! Recusandae eveniet neque ullam odio quae iusto molestiae consequatur provident perferendis, distinctio vero, placeat dolores rerum consectetur beatae fuga itaque earum cupiditate quidem sequi optio non pariatur illum. Labore vel rerum laboriosam, sit, ipsa aliquam tempora ratione exercitationem, quisquam totam eaque excepturi dolore delectus recusandae quam natus! Dolorem officiis excepturi similique aperiam assumenda amet vel dignissimos rem rerum libero quas doloremque natus enim saepe in, explicabo temporibus, minima tempore, facere sit ipsam cum mollitia! Enim corrupti natus blanditiis quod accusantium pariatur tempora, adipisci autem doloremque suscipit architecto perferendis, repudiandae non deleniti recusandae doloribus, debitis nam reiciendis dolorem. Nostrum delectus earum quae est eum optio quia? Quaerat atque nostrum dolor repellendus ipsa provident, consequatur hic ipsam nulla modi placeat quasi, enim officiis adipisci suscipit beatae. Quibusdam, cupiditate! Fuga omnis facere iure reiciendis debitis consectetur natus impedit, rerum eaque modi eum ut, illo quae sunt aliquam, expedita temporibus. Alias inventore eligendi recusandae cumque ipsum rerum illo assumenda, placeat vel ut consequatur asperiores? Iusto eaque dicta, aperiam aliquam possimus neque adipisci soluta obcaecati magnam nobis aut quae unde libero error delectus earum veniam molestias laborum sint, amet commodi repellat atque fuga? Nostrum odit natus repellendus cupiditate error delectus aut sequi temporibus esse a sapiente velit quo perspiciatis accusantium dolor hic dolorum non, aspernatur, id ipsa praesentium ex consequuntur dolore! Quos voluptatum, repudiandae commodi vero nemo rem animi officiis blanditiis consequatur numquam possimus quia sunt eius dicta aliquid quasi? A saepe consequatur quas quis amet facilis, alias perspiciatis sunt, quia culpa explicabo dolorum aut ipsa unde enim, quisquam nobis quaerat sed aliquid neque eveniet sapiente excepturi voluptatum. Laborum saepe, praesentium distinctio nihil temporibus doloribus dolorum beatae atque dicta. Aliquam veritatis vero consequuntur iure mollitia enim tempora, beatae eaque. Laborum ab debitis maiores? Soluta debitis aspernatur delectus, id quo eligendi porro. Cum quam aliquid, nam quod maiores facere odit quibusdam, minus nesciunt, enim animi alias! Error, nesciunt voluptatem dignissimos, tempora perspiciatis sequi temporibus quam qui expedita eaque id, fugiat nihil. Animi, facere odio rerum facilis eaque blanditiis eius aspernatur autem dolores quia non quidem a. Itaque fuga cumque corrupti perferendis! Reiciendis fugiat error explicabo, atque officiis, dolores perspiciatis quos similique nemo aut quia hic accusamus iure nulla. Nihil explicabo praesentium omnis sit voluptate? Modi aut aliquam voluptas architecto itaque pariatur blanditiis dolores explicabo culpa, minus earum dolorem voluptatem deserunt saepe esse ipsa quo quidem eos illum ut, error dolor porro? Neque ex molestias animi maiores hic aliquid esse cum enim, corrupti ipsa dignissimos eum, a id libero consequuntur dolore. Eveniet, a officiis aut qui dolore suscipit repellat exercitationem consequatur iste pariatur distinctio? Eveniet ab, aspernatur ut ad ullam corporis velit. Hic, laudantium dolor!
+            <section className="relative h-[calc(100vh-180px)] max-h-120 max-w-360 mx-auto mb-4">
+                <Image src={"/assets/images/banner.png"} alt="Banner" width={1200} height={400} className="w-full h-full"/>
+                <div className="absolute inset-0 w-full h-full bg-(--main-dark-color) opacity-50"></div>
+
+                <Link href={"/agendar"} className="absolute bottom-8 left-8 p-4 rounded-xl bg-(--main-color) text-white title shadow shadow-black">Marcar consulta</Link>
+            </section>
+
+            <section className="max-w-360 mx-auto mb-8 p-4 md:px-8">
+                <h1 className="mb-4 text-2xl text-(--main-dark-color) text-center title">Quem <span className="text-(--main-color)">somos</span></h1>
+
+                <div className="flex justify-center md:justify-between flex-wrap gap-4 max-w-352 mx-auto mb-4">
+                    <div className="max-w-40 w-full">
+                        <Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={400} height={300} className="w-full"/>
+                    </div>
+
+                    <div className="max-w-40 w-full">
+                        <Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={400} height={300} className="w-full"/>
+                    </div>
+
+                    <div className="max-w-40 w-full">
+                        <Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={400} height={300} className="w-full"/>
+                    </div>
+
+                    <div className="max-w-40 w-full">
+                        <Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={400} height={300} className="w-full"/>
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                    <div className="flex-1 text-center md:text-left">
+                        <p>Na Gynocare, entendemos que cuidar da saúde é um ato de amor-próprio. Nascemos do desejo de criar um espaço onde cada mulher se sinta segura, compreendida e verdadeiramente acolhida. Mais do que realizar exames, nossa missão é oferecer uma jornada de cuidado completa, com precisão, tecnologia de ponta e, acima de tudo, um atendimento humano e gentil.
+                        Nossa equipe é formada por especialistas dedicados que acreditam que a confiança é a base de qualquer diagnóstico. Por isso, investimos em um ambiente confortável e em uma comunicação clara e transparente, garantindo que você tenha tranquilidade em cada etapa do seu cuidado.
+                        Seu bem-estar é a nossa prioridade. Bem-vinda à Gynocare.</p>
+                    </div>
+
+                    <div className="relative flex justify-end flex-1 ps-8 pb-8">
+                        <Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={400}/>
+
+                        <Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={200} height={200} className="absolute bottom-0 left-0 w-1/2 aspect-square"/>
+                    </div>
                 </div>
             </section>
+
+            <section className="max-w-360 mx-auto mb-8 p-4 md:px-8">
+                <h2 className="mb-4 text-2xl text-(--main-dark-color) text-center title">Nossos <span className="text-(--main-color)">Médicos</span></h2>
+
+                <Link href={"/nossos-medicos"} className="block w-fit mx-auto py-2 px-4 md:py-4 bg-(--main-color) md:text-xl text-white title rounded-full md:rounded-xl">Saiba mais</Link>
+            </section>
+
+            <section className="relative max-w-360 mx-auto mb-8 py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color)">
+                <h2 className="relative mb-4 text-2xl text-(--main-color) text-center title z-index-10">Nossas <span className="text-white">Especialidades</span></h2>
+
+                <div className="flex flex-wrap justify-center gap-4 md:gap-8 max-w-300 mx-auto">
+                    <Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="absolute inset-0 md:static md:block md:max-w-72 w-full h-full opacity-20 md:opacity-100"/>
+
+                    <Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full"/>
+
+                    <Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full"/>
+
+                    <Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full"/>
+
+                    <Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full"/>
+
+                    <Link href={"/especialidades"} className="relative flex items-center justify-center py-2 px-4 md:max-w-72 md:w-full md:aspect-square bg-(--main-color) md:bg-(--main-light-color) text-white title rounded-full md:rounded-none shadow-black shadow md:shadow-none z-index-10">
+                        <span className="md:text-2xl">Veja Todas</span>
+                    </Link>
+                </div>
+            </section>
+
+            <section className="max-w-360 mx-auto mb-8 p-4 md:px-8">
+                <h2 className="mb-4 text-2xl text-(--main-dark-color) text-center title">Depoimento de <span className="text-(--main-color)">Pacientes</span></h2>
+
+                <a href="" className="block w-fit mx-auto py-2 px-4 md:py-4 bg-(--main-color) md:text-xl text-white title rounded-full md:rounded-xl">Avaliar</a>
+            </section>
+
+            <section className="relative max-w-360 mx-auto py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color) md:bg-white">
+                <h2 className="relative mb-4 text-2xl text-(--main-color) md:text-(--main-dark-color) text-center title z-10">Nossos <span className="text-white md:text-(--main-color)">Procedimentos</span></h2>
+
+                <Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="absolute inset-0 md:hidden w-full h-full opacity-20"/>
+
+                <Link href={"/procedimentos"} className="relative block w-fit mx-auto py-2 px-4 md:py-4 bg-(--main-color) md:text-xl text-white title rounded-full md:rounded-xl z-10">Saiba mais</Link>
+            </section>
+
+            <hr className="max-w-360 w-4/5 mx-auto mb-8 opacity-5 border" />
+
+            <section className="max-w-360 mx-auto mb-8 p-4 md:px-8">
+                <h2 className="mb-4 text-2xl text-(--main-dark-color) text-center title">Convênios <span className="text-(--main-color)">Aceitos</span></h2>
+
+                <Link href={"/procedimentos"} className="block w-fit mx-auto py-2 px-4 bg-(--main-color) text-white title rounded-xl">Saiba mais</Link>
+            </section>
+
+            <InfoCards />
         </main>
     )
 }

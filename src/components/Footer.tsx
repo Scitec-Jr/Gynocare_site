@@ -38,7 +38,7 @@ export default function Footer() {
 
 					<div>
 						<h2 className="text-lg font-semibold">Endereço</h2>
-						<p className="w-80">Avenida Independência, Quadra 2, Bloco G - Planaltina/DF CEP: 73310-317</p>
+						<p className="max-w-80">Avenida Independência, Quadra 2, Bloco G - Planaltina/DF CEP: 73310-317</p>
 					</div>
 				</div>
 			</div>
