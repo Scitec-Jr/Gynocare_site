@@ -14,7 +14,7 @@ export default function MobileNavigation() {
 				<Image src="/assets/global/logo.png" alt="Gynocare" width={200} height={100} />
 			</div>
 
-			<button onClick={() => setOpen(!open)} className="relative right-4 w-8 h-8 z-20" aria-label="Menu">
+			<button onClick={() => setOpen(!open)} className="relative right-4 w-8 h-8 cursor-pointer z-20" aria-label="Menu">
 				<span className={`absolute left-1 h-0.5 w-6 transition-all ${open ? "rotate-45 top-1/2 bg-white" : "top-2 bg-(--main-dark-color)"}`} />
 
 				<span className={`absolute left-1 top-4 h-0.5 w-6 bg-(--main-dark-color) transition-all ${open ? "opacity-0" : ""}`} />

@@ -1,11 +1,11 @@
-type Treatments = {
+export type Treatments = {
     slug: string
     name: string
     information: string
     preparation: string
 }
 
-type Procedure = {
+export type Procedure = {
     slug: string
     name: string
     treatments: Treatments[]
@@ -61,7 +61,7 @@ export const procedures: Procedure[] = [
             {
                 slug: "prostata",
                 name: "Próstata",
-                information: "Lorem Ipsum",
+                information: "Teste aqui",
                 preparation: "Lorem ipsum"
             },
             {
