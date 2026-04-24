@@ -49,10 +49,16 @@ export default function Chat() {
 		try {
 			const [procResult, exResult, doutResult] = await Promise.all([fetch("/api/procedimentos").then((r) => r.json()), fetch("/api/exames").then((r) => r.json()), fetch("/api/doutores").then((r) => r.json())]);
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const doutoresFormatados = (doutResult || []).map((d: any) => ({
+				Id: d.id || d.Id,
+				Nome: d.name || d.Nome,
+			}));
+
 			setDadosCarregados({
 				procedimentos: procResult || [],
 				exames: exResult || [],
-				doutores: doutResult || [],
+				doutores: doutoresFormatados || [],
 			});
 		} catch (error) {
 			console.error("Erro ao carregar dados:", error);

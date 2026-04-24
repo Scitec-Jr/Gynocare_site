@@ -19,7 +19,6 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: "exameId é obrigatório" }, { status: 400 });
 		}
 
-		// Buscar agendamentos do doutor nos próximos 3 meses
 		const agendamentos = await query<AgendamentoResult>(
 			`SELECT DATE_FORMAT(Data, '%Y-%m-%d') as Data, TIME_FORMAT(Horario_inicio, '%H:%i') as Horario_inicio
 			 FROM Agendamento 
@@ -28,36 +27,44 @@ export async function GET(request: NextRequest) {
 			[doutorId]
 		);
 
-		// Gerar horários disponíveis (8:00 até 17:00, a cada 30 minutos)
 		const horariosDisponiveis: Record<string, string[]> = {};
 		const hoje = new Date();
 		const fim = new Date();
 		fim.setDate(fim.getDate() + 90);
 
-		// Criar set de horários ocupados
 		const horariosOcupados = new Set(
 			agendamentos.map((a) => `${a.Data}|${a.Horario_inicio}`)
 		);
 
-		// Gerar todos os horários de cada data
 		for (let d = new Date(hoje); d <= fim; d.setDate(d.getDate() + 1)) {
 			const dataStr = d.toISOString().split("T")[0];
 
-			// Gerar horários de 8:00 até 17:00 a cada 30 minutos
+			const diaSemana = d.getDay(); // 0 = domingo, 6 = sábado
+
+			// ❌ Pula domingo
+			if (diaSemana === 0) continue;
+
+			const horaInicio = 8;
+			let horaFim = 18;
+
+			// sábado: 8h às 12h
+			if (diaSemana === 6) {
+				horaFim = 12;
+			}
+
 			const horarios: string[] = [];
-			for (let hora = 8; hora < 17; hora++) {
+
+			for (let hora = horaInicio; hora < horaFim; hora++) {
 				for (let minuto = 0; minuto < 60; minuto += 30) {
 					const horarioStr = `${String(hora).padStart(2, "0")}:${String(minuto).padStart(2, "0")}`;
 					const chave = `${dataStr}|${horarioStr}`;
 
-					// Só adicionar se não estiver ocupado
 					if (!horariosOcupados.has(chave)) {
 						horarios.push(horarioStr);
 					}
 				}
 			}
 
-			// Só adicionar datas que têm horários disponíveis
 			if (horarios.length > 0) {
 				horariosDisponiveis[dataStr] = horarios;
 			}

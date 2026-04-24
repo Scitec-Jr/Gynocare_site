@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function DoctorCard({name, graduation, image, description}: {name: string; graduation: string; image: string; description: string}) {
     return (
         <div className="mb-12">
-            <h2 className="mb-4 text-2xl text-(--main-dark-color) title">Doutor <span className="text-(--main-color)">{name}</span></h2>
+            <h2 className="mb-4 text-2xl text-(--main-dark-color) title"><span className="text-(--main-color)">{name}</span></h2>
 
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mx-4 md:mx-8 mb-4">
                 <div className="flex-1">

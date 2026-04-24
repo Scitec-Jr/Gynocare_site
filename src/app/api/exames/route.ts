@@ -9,12 +9,12 @@ export async function GET(request: NextRequest) {
 
 		if (procedimentoId) {
 			results = await query(
-				"SELECT Id, Nome FROM Exame WHERE Procedimento_Id = ? ORDER BY Nome",
+				"SELECT DISTINCT Id, Nome FROM Exame WHERE Procedimento_Id = ? ORDER BY Nome",
 				[procedimentoId]
 			);
 		} else {
 			results = await query(
-				"SELECT Id, Nome FROM Exame ORDER BY Nome"
+				"SELECT DISTINCT Id, Nome FROM Exame ORDER BY Nome"
 			);
 		}
 

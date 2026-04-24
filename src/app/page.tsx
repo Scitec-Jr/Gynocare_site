@@ -4,8 +4,10 @@ import InfoCards from "@/components/InfoCards";
 import Carousel from "@/components/Carousel";
 import MedicalCareCard from "@/components/MedicalCare/MedicalCareCard";
 import TestimonialFormWrapper from "@/components/TestimonialFormWrapper";
+import { getDoctorsList } from "@/components/Doctors/doctors";
 
-export default function Home() {
+export default async function Home() {
+	const doctorsList = await getDoctorsList();
 	return (
 		<main>
 			<section className="relative h-[calc(100vh-180px)] max-h-120 max-w-360 mx-auto mb-4">
@@ -59,63 +61,26 @@ export default function Home() {
 				</h2>
 
 				<Carousel>
-					<div className="min-w-full md:min-w-auto items-center gap-4 md:flex-[0_0_100%] lg:flex-[0_0_50%] px-4">
+				{doctorsList.map((doctor) => (
+					<div key={doctor.id} className="min-w-full md:min-w-auto items-center gap-4 md:flex-[0_0_100%] lg:flex-[0_0_50%] px-4">
 						<div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-(--main-dark-color) rounded-xl">
 							<div>
-								<Image src={"/assets/images/placeholder2.png"} alt="Médico" width={200} height={200} />
+								<Image src={doctor.image} alt={doctor.name} width={200} height={200} />
 							</div>
 
 							<div className="text-white font-bold">
-								<h3 className="mb-4">Nome médico</h3>
-								<h3>Área de atuação</h3>
+								<h3 className="mb-4">{doctor.name}</h3>
+								<h3>{doctor.graduation || "Especialista"}</h3>
 							</div>
 						</div>
 					</div>
+				))}
+                </Carousel>
 
-					<div className="min-w-full md:min-w-auto items-center gap-4 md:flex-[0_0_100%] lg:flex-[0_0_50%] px-4">
-						<div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-(--main-dark-color) rounded-xl">
-							<div>
-								<Image src={"/assets/images/placeholder2.png"} alt="Médico" width={200} height={200} />
-							</div>
-
-							<div className="text-white font-bold">
-								<h3 className="mb-4">Nome médico</h3>
-								<h3>Área de atuação</h3>
-							</div>
-						</div>
-					</div>
-
-					<div className="min-w-full md:min-w-auto items-center gap-4 md:flex-[0_0_100%] lg:flex-[0_0_50%] px-4">
-						<div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-(--main-dark-color) rounded-xl">
-							<div>
-								<Image src={"/assets/images/placeholder2.png"} alt="Médico" width={200} height={200} />
-							</div>
-
-							<div className="text-white font-bold">
-								<h3 className="mb-4">Nome médico</h3>
-								<h3>Área de atuação</h3>
-							</div>
-						</div>
-					</div>
-
-					<div className="min-w-full md:min-w-auto items-center gap-4 md:flex-[0_0_100%] lg:flex-[0_0_50%] px-4">
-						<div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-(--main-dark-color) rounded-xl">
-							<div>
-								<Image src={"/assets/images/placeholder2.png"} alt="Médico" width={200} height={200} />
-							</div>
-
-							<div className="text-white font-bold">
-								<h3 className="mb-4">Nome médico</h3>
-								<h3>Área de atuação</h3>
-							</div>
-						</div>
-					</div>
-				</Carousel>
-
-				<Link href={"/nossos-medicos"} className="block w-fit mx-auto py-2 px-4 md:py-4 bg-(--main-color) md:text-xl text-white title rounded-full md:rounded-xl">
+                <Link href={"/nossos-medicos"} className="block w-fit mx-auto py-2 px-4 md:py-4 bg-(--main-color) md:text-xl text-white title rounded-full md:rounded-xl">
 					Saiba mais
 				</Link>
-			</section>
+            </section>
 
 			<section className="relative max-w-360 mx-auto mb-8 py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color)">
 				<h2 className="relative mb-4 text-2xl text-(--main-color) text-center title z-index-10">
