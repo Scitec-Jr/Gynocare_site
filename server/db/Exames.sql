@@ -1,0 +1,53 @@
+INSERT INTO Exame
+(Nome, Slug, Information, Preparation, Procedimento_Id, Criado_em, Atualizado_em)
+VALUES
+('Abdome infantil para refluxo','abdome-infantil-para-refluxo',... ,1,NOW(),NOW()),
+('Abdome total infantil','abdome-total-infantil',... ,1,NOW(),NOW()),
+('Aparelho urinário','aparelho-urinario',... ,1,NOW(),NOW()),
+('Avaliação de sinovite transitória','avaliacao-de-sinovite-transitoria',... ,1,NOW(),NOW()),
+('Bolsa testicular','bolsa-testicular-pediatrico',... ,1,NOW(),NOW()),
+('Cervical','cervical',... ,1,NOW(),NOW()),
+('Coluna','coluna',... ,1,NOW(),NOW()),
+('Mamária infantil','mamaria-infantil',... ,1,NOW(),NOW()),
+('Pélvica infantil','pelvica-infantil',... ,1,NOW(),NOW()),
+('Quadril (RN – displasia do desenvolvimento)','quadril-rn-displasia-do-desenvolvimento',... ,1,NOW(),NOW()),
+('Região inguinal bilateral','regiao-inguinal-bilateral',... ,1,NOW(),NOW()),
+('Suturas cranianas','suturas-cranianas',... ,1,NOW(),NOW()),
+('Tireoide','tireoide-pediatrico',... ,1,NOW(),NOW()),
+('Transfontanela','transfontanela',... ,1,NOW(),NOW()),
+
+('Avaliação do colo uterino','avaliacao-do-colo-uterino',... ,2,NOW(),NOW()),
+('Gestacional','gestacional',... ,2,NOW(),NOW()),
+('Gestacional com Doppler','gestacional-com-doppler',... ,2,NOW(),NOW()),
+('Gestacional inicial','gestacional-inicial',... ,2,NOW(),NOW()),
+('Morfológico 1º trimestre','morfologico-1-trimestre',... ,2,NOW(),NOW()),
+('Morfológico 2º trimestre','morfologico-2-trimestre',... ,2,NOW(),NOW()),
+('Neurossonografia fetal','neurossonografia-fetal',... ,2,NOW(),NOW()),
+
+('Avaliação de DIU 3D','avaliacao-de-diu-3d',... ,3,NOW(),NOW()),
+('Contagem de folículos','contagem-de-foliculos',... ,3,NOW(),NOW()),
+('Doppler ginecológico','doppler-ginecologico',... ,3,NOW(),NOW()),
+('Transabdominal','transabdominal',... ,3,NOW(),NOW()),
+('Transvaginal','transvaginal',... ,3,NOW(),NOW()),
+('Transvaginal 3D','transvaginal-3d',... ,3,NOW(),NOW()),
+('Transpubiana','transpubiana',... ,3,NOW(),NOW()),
+
+('Bolsa testicular','bolsa-testicular-urologico',... ,4,NOW(),NOW()),
+('Próstata (via abdominal)','prostata-via-abdominal',... ,4,NOW(),NOW()),
+('Rins e vias urinárias com resíduo pós-miccional','rins-e-vias-urinarias-com-residuo-pos-miccional',... ,4,NOW(),NOW()),
+
+('Abdome superior e abdome total','abdome-superior-e-abdome-total',... ,5,NOW(),NOW()),
+('Axilas','axilas',... ,5,NOW(),NOW()),
+('Hérnias','hernias',... ,5,NOW(),NOW()),
+('Mama','mama',... ,5,NOW(),NOW()),
+('Parede abdominal','parede-abdominal',... ,5,NOW(),NOW()),
+('Pescoço e região cervical','pescoco-e-regiao-cervical',... ,5,NOW(),NOW()),
+('Região inguinal','regiao-inguinal',... ,5,NOW(),NOW()),
+('Rins e vias urinárias','rins-e-vias-urinarias',... ,5,NOW(),NOW()),
+('Tireoide','tireoide-geral',... ,5,NOW(),NOW()),
+
+('Lesões traumáticas e inflamatórias','lesoes-traumaticas-e-inflamatorias',... ,6,NOW(),NOW()),
+('Punho','punho',... ,6,NOW(),NOW()),
+('Ombros','ombros',... ,6,NOW(),NOW()),
+('Tendões','tendoes',... ,6,NOW(),NOW()),
+('Tornozelos','tornozelos',... ,6,NOW(),NOW());

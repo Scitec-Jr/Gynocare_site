@@ -11,7 +11,7 @@ export default async function Home() {
 	return (
 		<main>
 			<section className="relative h-[calc(100vh-180px)] max-h-120 max-w-360 mx-auto mb-4">
-				<Image src={"/assets/images/banner.png"} alt="Banner" width={1200} height={400} className="w-full h-full" />
+				<Image src={"/assets/images/clinica/clinica2.jpeg"} alt="Banner" width={1200} height={400} className="w-full h-full" />
 				<div className="absolute inset-0 w-full h-full bg-(--main-dark-color) opacity-50"></div>
 
 				<Link href={"/agendar"} className="absolute bottom-8 left-8 p-4 rounded-xl bg-(--main-color) text-white title shadow shadow-black">
@@ -26,19 +26,19 @@ export default async function Home() {
 
 				<div className="flex justify-center md:justify-between flex-wrap gap-4 max-w-352 mx-auto mb-4">
 					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={400} height={300} className="w-full" />
+						<Image src={"/assets/images/clinica/clinica1.jpeg"} alt="Placeholder" width={400} height={300} className="w-full" />
 					</div>
 
 					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={400} height={300} className="w-full" />
+						<Image src={"/assets/images/clinica/clinica2.jpeg"} alt="Placeholder" width={400} height={300} className="w-full" />
 					</div>
 
 					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={400} height={300} className="w-full" />
+						<Image src={"/assets/images/clinica/clinica3.jpeg"} alt="Placeholder" width={400} height={300} className="w-full" />
 					</div>
 
 					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={400} height={300} className="w-full" />
+						<Image src={"/assets/images/clinica/clinica4.jpeg"} alt="Placeholder" width={400} height={300} className="w-full" />
 					</div>
 				</div>
 
@@ -48,9 +48,9 @@ export default async function Home() {
 					</div>
 
 					<div className="relative flex justify-end flex-1 ps-8 pb-8">
-						<Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={400} />
+						<Image src={"/assets/images/ecografia.jpeg"} alt="Placeholder" width={400} height={400} />
 
-						<Image src={"/assets/images/placeholder2.png"} alt="Placeholder" width={200} height={200} className="absolute bottom-0 left-0 w-1/2 aspect-square" />
+						<Image src={"/assets/images/ecografia2.jpeg"} alt="Placeholder" width={200} height={200} className="absolute bottom-0 left-0 w-1/2 aspect-square" />
 					</div>
 				</div>
 			</section>
@@ -64,10 +64,6 @@ export default async function Home() {
 				{doctorsList.map((doctor) => (
 					<div key={doctor.id} className="min-w-full md:min-w-auto items-center gap-4 md:flex-[0_0_100%] lg:flex-[0_0_50%] px-4">
 						<div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-(--main-dark-color) rounded-xl">
-							<div>
-								<Image src={doctor.image} alt={doctor.name} width={200} height={200} />
-							</div>
-
 							<div className="text-white font-bold">
 								<h3 className="mb-4">{doctor.name}</h3>
 								<h3>{doctor.graduation || "Especialista"}</h3>
@@ -88,13 +84,13 @@ export default async function Home() {
 				</h2>
 
 				<div className="flex flex-wrap justify-center gap-4 md:gap-8 max-w-300 mx-auto">
-					<Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="absolute inset-0 md:static md:block md:max-w-72 w-full h-full opacity-20 md:opacity-100" />
+					<Image src={"/assets/images/ecografia.jpeg"} alt="Placeholder" width={400} height={300} className="absolute inset-0 md:static md:block md:max-w-72 w-full opacity-20 md:opacity-100" />
 
-					<Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full" />
+					<Image src={"/assets/images/ecografia2.jpeg"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full" />
 
-					<Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full" />
+					<Image src={"/assets/images/fundo.jpeg"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full" />
 
-					<Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full" />
+					<Image src={"/assets/images/fundo2.jpeg"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full" />
 
 					<Image src={"/assets/images/placeholder1.png"} alt="Placeholder" width={400} height={300} className="hidden md:block max-w-72 w-full" />
 

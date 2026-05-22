@@ -13,10 +13,6 @@ export default function DoctorCard({name, graduation, image, description}: {name
 
                     <p>{description}</p>
                 </div>
-
-                <div className="flex-1">
-                    <Image src={image} alt="Doutor" width={400} height={400} />
-                </div>
             </div>
 
             <Link href={"/agendar"} className="ms-4 md:ms-8 py-2 px-4 bg-(--main-color) text-white rounded-xl">Marcar Consulta</Link>
