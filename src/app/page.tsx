@@ -26,19 +26,19 @@ export default async function Home() {
 
 				<div className="flex justify-center md:justify-between flex-wrap gap-4 max-w-352 mx-auto mb-4">
 					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/clinica/clinica1.jpeg"} alt="Placeholder" width={400} height={300} className="w-full" />
+						<Image src={"/assets/images/clinica/clinica1.jpeg"} alt="Placeholder" width={400} height={300} className="w-full h-30" />
 					</div>
 
 					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/clinica/clinica2.jpeg"} alt="Placeholder" width={400} height={300} className="w-full" />
+						<Image src={"/assets/images/clinica/clinica2.jpeg"} alt="Placeholder" width={400} height={300} className="w-full h-30" />
 					</div>
 
 					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/clinica/clinica3.jpeg"} alt="Placeholder" width={400} height={300} className="w-full" />
+						<Image src={"/assets/images/clinica/clinica3.jpeg"} alt="Placeholder" width={400} height={300} className="w-full h-30" />
 					</div>
 
 					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/clinica/clinica4.jpeg"} alt="Placeholder" width={400} height={300} className="w-full" />
+						<Image src={"/assets/images/clinica/clinica4.jpeg"} alt="Placeholder" width={400} height={300} className="w-full h-30" />
 					</div>
 				</div>
 
