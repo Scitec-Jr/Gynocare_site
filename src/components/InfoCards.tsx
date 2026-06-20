@@ -8,7 +8,7 @@ export default function InfoCards() {
 
                 <h2 className="mb-4 text-(--main-color) text-center"><span className="text-(--main-dark-color)">MARQUE</span> SUA CONSULTA</h2>
 
-                <a href="" className="text-(--main-color) font-semibold">Clique aqui</a>
+                <a href="https://wa.me/5561981768838" target="_blank" className="text-(--main-color) font-semibold">Clique aqui</a>
                 <p className="text-zinc-500 text-center">para marcar sua consulta pelo Whatsapp - (61) 98176-8838</p>
             </div>
 
@@ -17,7 +17,7 @@ export default function InfoCards() {
 
                 <h2 className="mb-4 text-(--main-color) text-center"><span className="text-(--main-dark-color)">CENTRAL</span> DE RELACIONAMENTO</h2>
 
-                <a href="" className="text-(--main-color) font-semibold">(61) 3388-7310</a>
+                <a href="https://wa.me/556133887310" target="_blank" className="text-(--main-color) font-semibold">(61) 3388-7310</a>
                 <p className="text-zinc-500 text-center">Ligue e marque sua consulta</p>
             </div>
 

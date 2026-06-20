@@ -1,483 +1,84 @@
-export type Treatments = {
-    slug: string
-    name: string
-    information: string
-    preparation: string
-}
+export type Treatment = {
+    id: number;
+    slug: string;
+    name: string;
+    information: string;
+    preparation: string;
+};
 
 export type Procedure = {
-    slug: string
-    name: string
-    treatments: Treatments[]
-}
+    id: number;
+    slug: string;
+    name: string;
+    treatments: Treatment[];
+};
 
-export const procedures: Procedure[] = [
-    {
-        slug: "medicina-interna",
-        name: "Medicina Interna",
-        treatments: [
-            {
-                slug: "transfontanelar",
-                name: "Transfontanelar",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "suturas-cranianas",
-                name: "Suturas Cranianas",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "cervical",
-                name: "Cervical",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "tireoide",
-                name: "Tireoide",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-superior",
-                name: "Abdome Superior",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "sinovite-transitoria",
-                name: "Sinovite Transitória",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "aparelho-urinario",
-                name: "Aparelho Urinário",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "prostata",
-                name: "Próstata",
-                information: "Teste aqui",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-total",
-                name: "Abdome Total",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "bolsa-testicular",
-                name: "Bolsa Testicular",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "regiao-inguinal",
-                name: "Região Inguinal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "parede-abdominal",
-                name: "Parede Abdominal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-        ]
-    },
-    {
-        slug: "pediatria",
-        name: "Pediatria",
-        treatments: [
-            {
-                slug: "transfontanelar",
-                name: "Transfontanelar",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "suturas-cranianas",
-                name: "Suturas Cranianas",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "cervical",
-                name: "Cervical",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "tireoide",
-                name: "Tireoide",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-superior",
-                name: "Abdome Superior",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "sinovite-transitoria",
-                name: "Sinovite Transitória",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "aparelho-urinario",
-                name: "Aparelho Urinário",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "prostata",
-                name: "Próstata",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-total",
-                name: "Abdome Total",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "bolsa-testicular",
-                name: "Bolsa Testicular",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "regiao-inguinal",
-                name: "Região Inguinal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "parede-abdominal",
-                name: "Parede Abdominal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-        ]
-    },
-    {
-        slug: "ginecologia",
-        name: "Ginecologia",
-        treatments: [
-            {
-                slug: "transfontanelar",
-                name: "Transfontanelar",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "suturas-cranianas",
-                name: "Suturas Cranianas",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "cervical",
-                name: "Cervical",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "tireoide",
-                name: "Tireoide",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-superior",
-                name: "Abdome Superior",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "sinovite-transitoria",
-                name: "Sinovite Transitória",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "aparelho-urinario",
-                name: "Aparelho Urinário",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "prostata",
-                name: "Próstata",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-total",
-                name: "Abdome Total",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "bolsa-testicular",
-                name: "Bolsa Testicular",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "regiao-inguinal",
-                name: "Região Inguinal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "parede-abdominal",
-                name: "Parede Abdominal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-        ]
-    },
-    {
-        slug: "obstetricia",
-        name: "Obstetrícia",
-        treatments: [
-            {
-                slug: "transfontanelar",
-                name: "Transfontanelar",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "suturas-cranianas",
-                name: "Suturas Cranianas",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "cervical",
-                name: "Cervical",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "tireoide",
-                name: "Tireoide",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-superior",
-                name: "Abdome Superior",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "sinovite-transitoria",
-                name: "Sinovite Transitória",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "aparelho-urinario",
-                name: "Aparelho Urinário",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "prostata",
-                name: "Próstata",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-total",
-                name: "Abdome Total",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "bolsa-testicular",
-                name: "Bolsa Testicular",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "regiao-inguinal",
-                name: "Região Inguinal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "parede-abdominal",
-                name: "Parede Abdominal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-        ]
-    },
-    {
-        slug: "medicina-fetal",
-        name: "Medicina Fetal",
-        treatments: [
-            {
-                slug: "transfontanelar",
-                name: "Transfontanelar",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "suturas-cranianas",
-                name: "Suturas Cranianas",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "cervical",
-                name: "Cervical",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "tireoide",
-                name: "Tireoide",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-superior",
-                name: "Abdome Superior",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "sinovite-transitoria",
-                name: "Sinovite Transitória",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "aparelho-urinario",
-                name: "Aparelho Urinário",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "prostata",
-                name: "Próstata",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-total",
-                name: "Abdome Total",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "bolsa-testicular",
-                name: "Bolsa Testicular",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "regiao-inguinal",
-                name: "Região Inguinal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "parede-abdominal",
-                name: "Parede Abdominal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-        ]
-    },
-    {
-        slug: "musculo-esqueletico",
-        name: "Músculo Esquelético",
-        treatments: [
-            {
-                slug: "transfontanelar",
-                name: "Transfontanelar",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "suturas-cranianas",
-                name: "Suturas Cranianas",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "cervical",
-                name: "Cervical",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "tireoide",
-                name: "Tireoide",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-superior",
-                name: "Abdome Superior",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "sinovite-transitoria",
-                name: "Sinovite Transitória",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "aparelho-urinario",
-                name: "Aparelho Urinário",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "prostata",
-                name: "Próstata",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "abdome-total",
-                name: "Abdome Total",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "bolsa-testicular",
-                name: "Bolsa Testicular",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "regiao-inguinal",
-                name: "Região Inguinal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-            {
-                slug: "parede-abdominal",
-                name: "Parede Abdominal",
-                information: "Lorem Ipsum",
-                preparation: "Lorem ipsum"
-            },
-        ]
-    },
-]
+type ProcedureApi = {
+    id: number;
+    name: string;
+    slug: string;
+};
+
+type ExamApi = {
+    id: number;
+    name: string;
+    slug: string;
+    information: string;
+    preparation: string;
+    procedureId: number;
+};
+
+export async function getProceduresList(): Promise<Procedure[]> {
+    try {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+        const [proceduresResponse, examsResponse] = await Promise.all([
+            fetch(`${baseUrl}/api/procedimentos?limit=100`, {
+                cache: "no-store",
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }),
+            fetch(`${baseUrl}/api/exames?limit=1000`, {
+                cache: "no-store",
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }),
+        ]);
+
+        if (!proceduresResponse.ok) {
+            throw new Error(`Erro ao buscar procedimentos: ${proceduresResponse.status}`);
+        }
+
+        if (!examsResponse.ok) {
+            throw new Error(`Erro ao buscar exames: ${examsResponse.status}`);
+        }
+
+        const proceduresData = await proceduresResponse.json();
+        const examsData = await examsResponse.json();
+
+        const procedures: ProcedureApi[] = proceduresData.data;
+        const exams: ExamApi[] = examsData.data;
+
+        return procedures.map((procedure) => ({
+            id: procedure.id,
+            slug: procedure.slug,
+            name: procedure.name,
+            treatments: exams
+                .filter((exam) => exam.procedureId === procedure.id)
+                .map((exam) => ({
+                    id: exam.id,
+                    slug: exam.slug,
+                    name: exam.name,
+                    information: exam.information,
+                    preparation: exam.preparation,
+                })),
+        }));
+    } catch (error) {
+        console.error("Erro ao buscar procedimentos:", error);
+        return [];
+    }
+}

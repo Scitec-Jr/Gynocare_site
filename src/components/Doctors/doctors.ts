@@ -23,7 +23,7 @@ export async function getDoctorsList(): Promise<DoctorsList[]> {
         }
 
         const data = await response.json();
-        return data;
+        return data.data;
     } catch (error) {
         console.error("Erro ao buscar doutores:", error);
         return [];

@@ -1,8 +1,43 @@
+CREATE TABLE Usuarios (
+    Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    Nome VARCHAR(150) NOT NULL,
+    Email VARCHAR(150) NOT NULL UNIQUE,
+    Senha VARCHAR(255) NOT NULL,
+
+    Funcao ENUM('admin', 'doctor', 'secretary') NOT NULL DEFAULT 'secretary',
+    Ativo BOOLEAN NOT NULL DEFAULT TRUE,
+
+    Criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX (Email),
+    INDEX (Ativo)
+);
+
 CREATE TABLE Doutor (
     Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     Nome VARCHAR(150) NOT NULL,
     Criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE DoutorHorario (
+    Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    DoutorId INT UNSIGNED NOT NULL,
+    DiaSemana TINYINT NOT NULL, -- 0=Domingo
+    HoraInicio TIME NOT NULL,
+    HoraFim TIME NOT NULL,
+
+    FOREIGN KEY (DoutorId) REFERENCES Doutor(Id)
+);
+
+CREATE TABLE DoutorHorarioIndisponivel (
+    Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    DoutorId INT UNSIGNED NOT NULL,
+    Data DATE NOT NULL,
+
+    FOREIGN KEY (DoutorId) REFERENCES Doutor(Id)
 );
 
 CREATE TABLE Procedimento (
@@ -89,3 +124,10 @@ CREATE TABLE Avaliacao (
 
     CHECK (Nota BETWEEN 1 AND 5)
 );
+
+CREATE INDEX idx_doutor_nome ON Doutor(Nome);
+CREATE INDEX idx_exame_nome ON Exame(Nome);
+CREATE INDEX idx_procedimento_nome ON Procedimento(Nome);
+CREATE INDEX idx_agendamento_data ON Agendamento(Data);
+CREATE INDEX idx_agendamento_doutor ON Agendamento(Doutor_Id);
+CREATE INDEX idx_avaliacao_status ON Avaliacao(Status);

@@ -1,5 +1,1 @@
-SELECT * from agendamento;
-
--- update avaliacao set Status = 1 where id = 1;
-
--- select * from procedimento;
+INSERT INTO Usuarios (Nome, Email, Senha, Funcao, Ativo) VALUES ('Admin', 'admin@gynocare.com', '$2b$12$BgnqJ4Khv.OlzbBeu/alB.35z2xGO9qzugg9GuL/WPD3fWxao.1rq', 'admin', TRUE);

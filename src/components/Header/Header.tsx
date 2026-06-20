@@ -8,19 +8,19 @@ export default function Header() {
         <header className="fixed top-0 md:static w-full z-50">
             <div className="max-w-360 mx-auto">
                 <div className="flex items-center gap-4 md:gap-8 p-4 md:px-8 bg-(--main-dark-color)">
-                    <a href="">
+                    <a href="https://www.instagram.com/clinicagynocareecografia/" target="_blank" rel="noopener noreferrer">
                         <Image src={"/assets/icons/instagram.png"} alt={"Instagram"} width={24} height={24} />
                     </a>
 
-                    <a href="">
+                    <a href="https://www.facebook.com/clinicagynocare" target="_blank" rel="noopener noreferrer">
                         <Image src={"/assets/icons/facebook.png"} alt={"Facebook"} width={24} height={24} />
                     </a>
 
-                    <a href="">
+                    <a href="https://br.linkedin.com/in/monica-zuazo-b781491b8?trk=people-guest_people_search-card" target="_blank" rel="noopener noreferrer">
                         <Image src={"/assets/icons/linkedin.png"} alt={"Linkedin"} width={24} height={24} />
                     </a>
 
-                    <a href="">
+                    <a href="tel:+556133887310">
                         <Image src={"/assets/icons/tel.png"} alt={"Telefone"} width={24} height={24} />
                     </a>
 

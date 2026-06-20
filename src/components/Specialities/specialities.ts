@@ -1,47 +1,68 @@
-import { procedures } from "../Procedures/procedures"
+export type Speciality = {
+	id: number;
+	name: string;
+	imageUrl: string;
+	url: string;
+	treatments: string[];
+};
 
-type Speciality = {
-    name: string;
-    imageUrl: string;
-    url: string;
-    treatments: string[];
+type Procedure = {
+	id: number;
+	name: string;
+	slug: string;
+};
+
+type Exam = {
+	id: number;
+	name: string;
+	slug: string;
+	procedureId: number;
+};
+
+export async function getSpecialitiesList(): Promise<Speciality[]> {
+	try {
+		const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+		const [proceduresResponse, examsResponse] = await Promise.all([
+			fetch(`${baseUrl}/api/procedimentos?limit=100`, {
+				cache: "no-store",
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}),
+			fetch(`${baseUrl}/api/exames?limit=1000`, {
+				cache: "no-store",
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}),
+		]);
+
+		if (!proceduresResponse.ok) {
+			throw new Error(`Erro ao buscar procedimentos: ${proceduresResponse.status}`);
+		}
+
+		if (!examsResponse.ok) {
+			throw new Error(`Erro ao buscar exames: ${examsResponse.status}`);
+		}
+
+		const proceduresData = await proceduresResponse.json();
+		const examsData = await examsResponse.json();
+
+		const procedures: Procedure[] = proceduresData.data;
+		const exams: Exam[] = examsData.data;
+
+		return procedures.map((procedure) => ({
+			id: procedure.id,
+			name: procedure.name,
+			imageUrl: procedure.id % 2 === 0 ? "/assets/images/ecografia.jpeg" : "/assets/images/ecografia2.jpeg",
+			url: `/procedimentos/${procedure.slug}`,
+			treatments: exams.filter((exam) => exam.procedureId === procedure.id).map((exam) => exam.name),
+		}));
+	} catch (error) {
+		console.error("Erro ao buscar especialidades:", error);
+		return [];
+	}
 }
-
-export const specialitiesList: Speciality[] = [
-    {
-        name: "Medicina interna",
-        imageUrl: "/assets/images/placeholder2.png",
-        url: "/procedimentos/medicina-interna",
-        treatments: (procedures.filter(procedure => procedure.name === "Medicina Interna").flatMap(procedure => procedure.treatments).map(treatment => treatment.name))
-    },
-    {
-        name: "Pediatria",
-        imageUrl: "/assets/images/placeholder2.png",
-        url: "/procedimentos/pediatria",
-        treatments: (procedures.filter(procedure => procedure.name === "Pediatria").flatMap(procedure => procedure.treatments).map(treatment => treatment.name))
-    },
-    {
-        name: "Ginecologia",
-        imageUrl: "/assets/images/placeholder2.png",
-        url: "/procedimentos/ginecologia",
-        treatments: (procedures.filter(procedure => procedure.name === "Ginecologia").flatMap(procedure => procedure.treatments).map(treatment => treatment.name))
-    },
-    {
-        name: "Obstetrícia",
-        imageUrl: "/assets/images/placeholder2.png",
-        url: "/procedimentos/obstetricia",
-        treatments: (procedures.filter(procedure => procedure.name === "Obstetrícia").flatMap(procedure => procedure.treatments).map(treatment => treatment.name))
-    },
-    {
-        name: "Medicina Fetal",
-        imageUrl: "/assets/images/placeholder2.png",
-        url: "/procedimentos/medicina-fetal",
-        treatments: (procedures.filter(procedure => procedure.name === "Medicina Fetal").flatMap(procedure => procedure.treatments).map(treatment => treatment.name))
-    },
-    {
-        name: "Músculo Esquelético",
-        imageUrl: "/assets/images/placeholder2.png",
-        url: "/procedimentos/musculo-esqueletico",
-        treatments: (procedures.filter(procedure => procedure.name === "Músculo Esquelético").flatMap(procedure => procedure.treatments).map(treatment => treatment.name))
-    }
-]

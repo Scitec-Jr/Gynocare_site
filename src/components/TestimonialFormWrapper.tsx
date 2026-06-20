@@ -1,23 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Testimonial from "./Testimonial";
 import TestimonialForm from "./TestimonialForm";
 import Carousel from "./Carousel";
 
+interface Avaliacao {
+	id: number;
+	rating: number;
+	text: string;
+	status: number;
+}
+
 export default function TestimonialFormWrapper() {
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [refreshKey, setRefreshKey] = useState(0);
+	const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchAvaliacoes = async () => {
+			try {
+				const response = await fetch("/api/avaliacoes");
+
+				if (!response.ok) {
+					throw new Error(`Erro HTTP: ${response.status}`);
+				}
+
+				const data = await response.json();
+
+				const avaliacoesArray = Array.isArray(data)
+					? data
+					: data.data || [];
+
+				const avaliacoesAprovadas = avaliacoesArray.filter(
+					(av: Avaliacao) => av.status === 1
+				);
+
+				setAvaliacoes(avaliacoesAprovadas);
+			} catch (error) {
+				console.error("Erro ao buscar avaliações:", error);
+				setAvaliacoes([]);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchAvaliacoes();
+	}, [refreshKey]);
 
 	const handleSuccess = () => {
 		setRefreshKey((prev) => prev + 1);
+		setIsFormOpen(false);
 	};
 
 	return (
 		<>
-			<Carousel>
-				<Testimonial refreshKey={refreshKey} />
-			</Carousel>
+			{loading ? (
+				<div className="text-center">
+					Carregando avaliações...
+				</div>
+			) : (
+				<Carousel>
+					{avaliacoes.map((avaliacao) => (
+						<Testimonial
+							key={avaliacao.id}
+							avaliacao={avaliacao}
+						/>
+					))}
+				</Carousel>
+			)}
 
 			<button
 				onClick={() => setIsFormOpen(true)}

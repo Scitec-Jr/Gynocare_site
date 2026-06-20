@@ -1,39 +1,64 @@
-import { query } from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { appointmentsService } from '@/services/appointments.service';
+import { appointmentSchema } from '@/lib/validations/appointments';
+import { getSession } from '@/lib/auth/session';
+
+export async function GET(request: NextRequest) {
+  try {
+    // Parâmetros
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const search = searchParams.get('search') || '';
+
+    const offset = (page - 1) * limit;
+
+    // Buscar agendamentos
+    const result = await appointmentsService.getAllAppointments(limit, offset, search);
+
+    return NextResponse.json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erro ao buscar agendamentos';
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: NextRequest) {
-	try {
-		const { doutorId, exameId, data, horario, telefone } = await request.json();
+  try {
+    const body = await request.json();
 
-		if (!doutorId || !exameId || !data || !horario || !telefone) {
-			return NextResponse.json({ error: "Dados incompletos" }, { status: 400 });
-		}
+    console.log(appointmentSchema.safeParse(body))
 
-		const [hora, minuto] = horario.split(":").map(Number);
-		let horaFim = hora;
-		let minutoFim = minuto + 30;
-		if (minutoFim >= 60) {
-			horaFim += 1;
-			minutoFim -= 60;
-		}
-		const horarioFim = `${String(horaFim).padStart(2, "0")}:${String(minutoFim).padStart(2, "0")}`;
+    // Validar input
+    const validation = appointmentSchema.safeParse(body);
+    if (!validation.success) {
+      const errors = validation.error.issues.map(e => ({
+        field: e.path.join('.'),
+        message: e.message,
+      }));
+      return NextResponse.json({ errors }, { status: 400 });
+    }
 
-		const sql = `
-			INSERT INTO Agendamento (Doutor_Id, Exame_Id, Telefone, Horario_inicio, Horario_fim, Data)
-			VALUES (?, ?, ?, ?, ?, ?)
-		`;
+    // Criar agendamento
+    const appointment = await appointmentsService.createAppointment(
+      validation.data.doctorId,
+      validation.data.examId,
+      validation.data.date,
+      validation.data.startTime,
+      validation.data.endTime,
+      validation.data.phone
+    );
 
-		await query(sql, [doutorId, exameId, telefone, horario, horarioFim, data]);
-
-		return NextResponse.json(
-			{
-				success: true,
-				message: "Agendamento realizado com sucesso",
-			},
-			{ status: 201 },
-		);
-	} catch (error) {
-		console.error("Erro ao criar agendamento:", error);
-		return NextResponse.json({ error: "Erro ao criar agendamento" }, { status: 500 });
-	}
+    return NextResponse.json(appointment, { status: 201 });
+  } catch (error) {
+    console.log(error)
+    const message = error instanceof Error ? error.message : 'Erro ao criar agendamento';
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
+  }
 }

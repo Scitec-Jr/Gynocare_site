@@ -5,8 +5,8 @@ export default function SpecialityCard({ name, imageUrl, url, treatments }: { na
 	return (
 		<div className="group odd:bg-zinc-100 p-8 md:pb-12">
 			<div className="flex flex-col items-center md:group-even:flex-row md:group-odd:flex-row-reverse justify-between gap-8 max-w-2xl mx-auto">
-				<div className="relative flex-1 h-full">
-					<Image src={imageUrl} alt={name} width={300} height={300} className="h-full border-3 border-(--main-color) rounded-xl" />
+				<div className="relative w-full max-w-75">
+					<Image src={imageUrl} alt={name} width={300} height={300} className="h-full max-h-50 border-3 border-(--main-color) rounded-xl" />
 
 					<h2 className="absolute left-0 bottom-0 w-11/10 py-2 px-4 bg-(--main-color) text-white text-center title rounded-full md:rounded-xl -translate-x-1/20 translate-y-1/2">{name}</h2>
 				</div>

@@ -27,13 +27,15 @@ export default function Footer() {
 					<div className="flex flex-col mb-2">
 						<h2 className="text-lg font-semibold">Central de Relacionamento</h2>
 
-						<a href="" className="underline">
+						<a href="https://wa.me/556133887310" target="_blank" className="underline">
 							(61) 3388-7310
 						</a>
-						<a href="" className="underline">
-							(61) 3388-7310
+						<a href="https://wa.me/5561981768838" target="_blank" className="underline">
+							(61) 98176-8838
 						</a>
-						<a href="">clinicagynocare.df@gmail.com</a>
+						<a href="mailto:clinicagynocare.df@gmail.com" target="_blank" className="underline">
+							clinicagynocare.df@gmail.com
+						</a>
 					</div>
 
 					<div className="flex flex-col mb-2">
@@ -54,9 +56,9 @@ export default function Footer() {
 				<small>© 2020 - CLÍNICA GYNOCARE - Todos os Direitos Reservados.</small>
 			</div>
 
-			<button className="fixed bottom-6 right-28 sm:bottom-8 sm:right-28 z-40 p-3 sm:p-4 bg-(--main-color) rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 cursor-pointer">
+			<a href="tel:+556133887310" target="_blank" className="fixed bottom-6 right-28 sm:bottom-8 sm:right-28 z-40 p-3 sm:p-4 bg-(--main-color) rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all active:scale-95 cursor-pointer">
 				<Image src={"/assets/icons/ringTel.png"} alt={"Contato"} width={32} height={32} />
-			</button>
+			</a>
 
 			<Chat />
 		</footer>

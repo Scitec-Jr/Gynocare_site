@@ -1,16 +1,30 @@
+import type { Metadata } from "next";
 import "./globals.css";
-import {inter, konkhmerSleokchher} from "../../public/fonts/fonts";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header/Header";
+import { inter, konkhmerSleokchher } from "../../public/fonts/fonts";
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export const metadata: Metadata = {
+    title: "Gynocare",
+    description: "Clínica especializada em exames e consultas",
+    keywords: ["ginecologia", "exames", "consultas", "ultrassom"],
+    authors: [
+        {
+            name: "Gynocare",
+        },
+    ],
+};
+
+export default function RootLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     return (
-        <html lang="pt" className={`${inter.variable} ${konkhmerSleokchher.variable}`} suppressHydrationWarning>
-            <body className="pt-44 md:pt-0">
-                <Header></Header>
-                {children}
-                <Footer></Footer>
-            </body>
+        <html
+            lang="pt"
+            className={`${inter.variable} ${konkhmerSleokchher.variable}`}
+            suppressHydrationWarning
+        >
+            <body>{children}</body>
         </html>
-    )
+    );
 }
