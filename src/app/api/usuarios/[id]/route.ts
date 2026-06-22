@@ -5,15 +5,16 @@ import { getSession } from '@/lib/auth/session';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
-    const user = await usersService.getUserById(id);
+    const { id } = await params;
+    const user = await usersService.getUserById(parseInt(id));
 
     return NextResponse.json(user);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao buscar usuário';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }
@@ -23,11 +24,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verificar autenticação
     const session = await getSession();
+
     if (!session) {
       return NextResponse.json(
         { error: 'Não autenticado' },
@@ -35,22 +36,27 @@ export async function PUT(
       );
     }
 
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const userId = parseInt(id);
+
     const body = await request.json();
 
-    // Validar input
     const validation = userSchema.safeParse(body);
+
     if (!validation.success) {
       const errors = validation.error.issues.map(e => ({
         field: e.path.join('.'),
         message: e.message,
       }));
-      return NextResponse.json({ errors }, { status: 400 });
+
+      return NextResponse.json(
+        { errors },
+        { status: 400 }
+      );
     }
 
-    // Atualizar usuário
     const user = await usersService.updateUser(
-      id,
+      userId,
       validation.data.name,
       validation.data.email,
       validation.data.role || 'secretary'
@@ -59,6 +65,7 @@ export async function PUT(
     return NextResponse.json(user);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar usuário';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }
@@ -68,11 +75,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verificar autenticação
     const session = await getSession();
+
     if (!session) {
       return NextResponse.json(
         { error: 'Não autenticado' },
@@ -80,12 +87,15 @@ export async function DELETE(
       );
     }
 
-    const id = parseInt(params.id);
-    const result = await usersService.deleteUser(id);
+    const { id } = await params;
+    const userId = parseInt(id);
+
+    const result = await usersService.deleteUser(userId);
 
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao deletar usuário';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }

@@ -5,15 +5,16 @@ import { getSession } from '@/lib/auth/session';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
-    const appointment = await appointmentsService.getAppointmentById(id);
+    const { id } = await params;
+    const appointment = await appointmentsService.getAppointmentById(parseInt(id));
 
     return NextResponse.json(appointment);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao buscar agendamento';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }
@@ -23,11 +24,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verificar autenticação
     const session = await getSession();
+
     if (!session) {
       return NextResponse.json(
         { error: 'Não autenticado' },
@@ -35,22 +36,27 @@ export async function PUT(
       );
     }
 
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const appointmentId = parseInt(id);
+
     const body = await request.json();
 
-    // Validar input
     const validation = appointmentSchema.safeParse(body);
+
     if (!validation.success) {
       const errors = validation.error.issues.map(e => ({
         field: e.path.join('.'),
         message: e.message,
       }));
-      return NextResponse.json({ errors }, { status: 400 });
+
+      return NextResponse.json(
+        { errors },
+        { status: 400 }
+      );
     }
 
-    // Atualizar agendamento
     const appointment = await appointmentsService.updateAppointment(
-      id,
+      appointmentId,
       validation.data.doctorId,
       validation.data.examId,
       validation.data.date,
@@ -62,6 +68,7 @@ export async function PUT(
     return NextResponse.json(appointment);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar agendamento';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }
@@ -71,11 +78,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verificar autenticação
     const session = await getSession();
+
     if (!session) {
       return NextResponse.json(
         { error: 'Não autenticado' },
@@ -83,12 +90,15 @@ export async function DELETE(
       );
     }
 
-    const id = parseInt(params.id);
-    const result = await appointmentsService.deleteAppointment(id);
+    const { id } = await params;
+    const appointmentId = parseInt(id);
+
+    const result = await appointmentsService.deleteAppointment(appointmentId);
 
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao deletar agendamento';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }

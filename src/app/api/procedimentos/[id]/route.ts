@@ -5,15 +5,16 @@ import { getSession } from '@/lib/auth/session';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
-    const procedure = await proceduresService.getProcedureById(id);
+    const { id } = await params;
+    const procedure = await proceduresService.getProcedureById(parseInt(id));
 
     return NextResponse.json(procedure);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao buscar procedimento';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }
@@ -23,11 +24,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verificar autenticação
     const session = await getSession();
+
     if (!session) {
       return NextResponse.json(
         { error: 'Não autenticado' },
@@ -35,22 +36,27 @@ export async function PUT(
       );
     }
 
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const procedureId = parseInt(id);
+
     const body = await request.json();
 
-    // Validar input
     const validation = procedureSchema.safeParse(body);
+
     if (!validation.success) {
       const errors = validation.error.issues.map(e => ({
         field: e.path.join('.'),
         message: e.message,
       }));
-      return NextResponse.json({ errors }, { status: 400 });
+
+      return NextResponse.json(
+        { errors },
+        { status: 400 }
+      );
     }
 
-    // Atualizar procedimento
     const procedure = await proceduresService.updateProcedure(
-      id,
+      procedureId,
       validation.data.name,
       validation.data.slug
     );
@@ -58,6 +64,7 @@ export async function PUT(
     return NextResponse.json(procedure);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar procedimento';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }
@@ -67,11 +74,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verificar autenticação
     const session = await getSession();
+
     if (!session) {
       return NextResponse.json(
         { error: 'Não autenticado' },
@@ -79,12 +86,15 @@ export async function DELETE(
       );
     }
 
-    const id = parseInt(params.id);
-    const result = await proceduresService.deleteProcedure(id);
+    const { id } = await params;
+    const procedureId = parseInt(id);
+
+    const result = await proceduresService.deleteProcedure(procedureId);
 
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao deletar procedimento';
+
     return NextResponse.json(
       { error: message },
       { status: 500 }
