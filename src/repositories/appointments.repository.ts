@@ -1,6 +1,7 @@
 import { query, queryOne, execute } from '@/lib/db/connection';
+import { RowDataPacket } from 'mysql2/promise';
 
-export interface AppointmentRow {
+export interface AppointmentRow extends RowDataPacket {
   Id: number;
   Doutor_Id: number;
   Exame_Id: number;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import mysql, { ResultSetHeader } from 'mysql2/promise';
 
 const pool = mysql.createPool({
@@ -12,20 +11,21 @@ const pool = mysql.createPool({
   enableKeepAlive: true,
 });
 
-export async function query<T extends mysql.ResultSetHeader = any>(
+export async function query<T = unknown>(
   sql: string,
   values?: (string | number | boolean | null)[]
 ): Promise<T[]> {
   const connection = await pool.getConnection();
+
   try {
-    const [rows] = await connection.query<T[]>(sql, values || []);
-    return rows;
+    const [rows] = await connection.query(sql, values || []);
+    return rows as T[];
   } finally {
     connection.release();
   }
 }
 
-export async function queryOne<T extends ResultSetHeader = any>(
+export async function queryOne<T = unknown>(
   sql: string,
   values?: (string | number | boolean | null)[]
 ): Promise<T | null> {
@@ -36,14 +36,12 @@ export async function queryOne<T extends ResultSetHeader = any>(
 export async function execute(
   sql: string,
   values?: (string | number | boolean | null)[]
-): Promise<{ insertId: number; affectedRows: number }> {
+): Promise<ResultSetHeader> {
   const connection = await pool.getConnection();
+
   try {
-    const [result] = await connection.query(sql, values || []);
-    return {
-      insertId: (result as any).insertId || 0,
-      affectedRows: (result as any).affectedRows || 0,
-    };
+    const [result] = await connection.query<ResultSetHeader>(sql, values || []);
+    return result;
   } finally {
     connection.release();
   }

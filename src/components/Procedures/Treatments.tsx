@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Treatments, Procedure } from "./procedures";
+import { Treatment, Procedure } from "./procedures";
 
-export default function TreatmentButtons({ procedures, procedure, treatments, treatment }: { procedures: Procedure[]; procedure: string; treatments: Treatments[]; treatment: string }) {
+export default function TreatmentButtons({ procedures, procedure, treatments, treatment }: { procedures: Procedure[]; procedure: string; treatments: Treatment[]; treatment: string }) {
 	const [open, setOpen] = useState(false);
 
 	return (
