@@ -14,6 +14,7 @@ export interface FormFieldProps {
   disabled?: boolean;
   options?: Array<{ label: string; value: string | number }>;
   rows?: number;
+  allowEmpty?: boolean;
 }
 
 export function FormField({
@@ -28,6 +29,7 @@ export function FormField({
   disabled,
   options,
   rows = 4,
+  allowEmpty = false,
 }: FormFieldProps) {
   const inputClasses =
     'w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-(--main-color) disabled:bg-gray-100 disabled:cursor-not-allowed ' +
@@ -58,7 +60,7 @@ export function FormField({
           disabled={disabled}
           className={inputClasses}
         >
-          <option value="">Selecione uma opção</option>
+          {allowEmpty && <option value="">Selecione uma opção</option>}
           {options?.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}

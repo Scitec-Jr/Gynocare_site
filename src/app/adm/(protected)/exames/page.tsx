@@ -1,66 +1,101 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AdminTable, { TableColumn } from "@/components/admin/AdminTable";
 import AdminModal from "@/components/admin/AdminModal";
+import AdminAlert from "@/components/admin/AdminAlert";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import SearchBar from "@/components/admin/SearchBar";
 import Pagination from "@/components/admin/Pagination";
-import { mockExams, mockProcedures } from "@/lib/admin/mockData";
-import { Exam } from "@/lib/admin/types";
 import { FormField } from "@/components/admin/AdminForm";
-
-const columns: TableColumn<Exam>[] = [
-	{ key: "name", label: "Nome do Exame", sortable: true },
-	{ key: "slug", label: "Slug", sortable: true },
-	{
-		key: "procedureId",
-		label: "Procedimento",
-		render: (value) => {
-			const proc = mockProcedures.find((p) => p.id === value);
-			return proc?.name || "N/A";
-		},
-	},
-	{
-		key: "createdAt",
-		label: "Criado em",
-		render: (value) => new Date(value).toLocaleDateString("pt-BR"),
-	},
-];
+import { useAdminList } from "@/hooks/useAdminList";
+import { apiFetch, ApiRequestError, fetchAll } from "@/lib/admin/api";
+import { Exam, Procedure } from "@/lib/admin/types";
+import { formatDate, generateSlug } from "@/lib/admin/utils";
 
 export default function ExamsPage() {
-	const [exams, setExams] = useState<Exam[]>(mockExams);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
+	const {
+		data: exams,
+		currentPage,
+		setCurrentPage,
+		totalPages,
+		total,
+		handleSearch,
+		isLoading,
+		error,
+		setError,
+		refetch,
+	} = useAdminList<Exam>("/api/exames");
+
+	const [procedures, setProcedures] = useState<Procedure[]>([]);
 	const [modal, setModal] = useState<{
 		isOpen: boolean;
 		type: "create" | "edit" | "delete";
 		data: Exam | null;
-	}>({
-		isOpen: false,
-		type: "create",
-		data: null,
-	});
+	}>({ isOpen: false, type: "create", data: null });
+
 	const [formData, setFormData] = useState({
 		name: "",
 		slug: "",
 		information: "",
 		preparation: "",
-		procedureId: 1,
+		procedureId: 0,
 	});
-	const itemsPerPage = 10;
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	const filteredExams = useMemo(() => {
-		return exams.filter((exam) => exam.name.toLowerCase().includes(searchTerm.toLowerCase()) || exam.slug.toLowerCase().includes(searchTerm.toLowerCase()));
-	}, [exams, searchTerm]);
+	const procedureMap = useMemo(
+		() => new Map(procedures.map((p) => [p.id, p.name])),
+		[procedures],
+	);
 
-	const totalPages = Math.ceil(filteredExams.length / itemsPerPage);
-	const paginatedExams = useMemo(() => {
-		const start = (currentPage - 1) * itemsPerPage;
-		return filteredExams.slice(start, start + itemsPerPage);
-	}, [filteredExams, currentPage]);
+	const columns: TableColumn<Exam>[] = [
+		{ key: "name", label: "Nome do Exame" },
+		{
+			key: "slug",
+			label: "Slug",
+			render: (value) => (
+				<span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">{value}</span>
+			),
+		},
+		{
+			key: "procedureId",
+			label: "Procedimento",
+			render: (value) => procedureMap.get(value) || "—",
+		},
+		{
+			key: "createdAt",
+			label: "Criado em",
+			render: (value) => formatDate(value),
+		},
+	];
+
+	useEffect(() => {
+		fetchAll<Procedure>("/api/procedimentos")
+			.then(setProcedures)
+			.catch(() => {});
+	}, []);
+
+	const procedureOptions = procedures.map((p) => ({
+		label: p.name,
+		value: p.id,
+	}));
+
+	const closeModal = () => {
+		setModal({ isOpen: false, type: "create", data: null });
+		setFieldErrors({});
+	};
 
 	const openCreateModal = () => {
-		setFormData({ name: "", slug: "", information: "", preparation: "", procedureId: 1 });
+		setFormData({
+			name: "",
+			slug: "",
+			information: "",
+			preparation: "",
+			procedureId: procedures[0]?.id || 0,
+		});
+		setFieldErrors({});
 		setModal({ isOpen: true, type: "create", data: null });
 	};
 
@@ -72,6 +107,7 @@ export default function ExamsPage() {
 			preparation: exam.preparation,
 			procedureId: exam.procedureId,
 		});
+		setFieldErrors({});
 		setModal({ isOpen: true, type: "edit", data: exam });
 	};
 
@@ -79,66 +115,173 @@ export default function ExamsPage() {
 		setModal({ isOpen: true, type: "delete", data: exam });
 	};
 
-	const handleSubmit = () => {
-		if (modal.type === "create") {
-			const newExam: Exam = {
-				id: Math.max(...exams.map((e) => e.id), 0) + 1,
-				...formData,
-				createdAt: new Date().toISOString().split("T")[0],
-				updatedAt: new Date().toISOString().split("T")[0],
-			};
-			setExams([...exams, newExam]);
-		} else if (modal.type === "edit" && modal.data) {
-			setExams(
-				exams.map((e) =>
-					e.id === modal.data?.id
-						? {
-								...e,
-								...formData,
-								updatedAt: new Date().toISOString().split("T")[0],
-							}
-						: e,
-				),
-			);
-		}
-		setModal({ isOpen: false, type: "create", data: null });
+	const handleNameChange = (name: string) => {
+		setFormData((prev) => ({
+			...prev,
+			name,
+			slug: modal.type === "create" ? generateSlug(name) : prev.slug,
+		}));
 	};
 
-	const handleDelete = () => {
-		if (modal.data) {
-			setExams(exams.filter((e) => e.id !== modal.data?.id));
+	const handleSubmit = async () => {
+		setIsSubmitting(true);
+		setFieldErrors({});
+		setError(null);
+		try {
+			if (modal.type === "create") {
+				await apiFetch("/api/exames", {
+					method: "POST",
+					body: JSON.stringify(formData),
+				});
+				setSuccessMsg("Exame criado com sucesso!");
+			} else if (modal.type === "edit" && modal.data) {
+				await apiFetch(`/api/exames/${modal.data.id}`, {
+					method: "PUT",
+					body: JSON.stringify(formData),
+				});
+				setSuccessMsg("Exame atualizado com sucesso!");
+			}
+			closeModal();
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) {
+				setFieldErrors(err.fieldErrors);
+				setError(err.message);
+			}
+		} finally {
+			setIsSubmitting(false);
 		}
-		setModal({ isOpen: false, type: "create", data: null });
+	};
+
+	const handleDelete = async () => {
+		if (!modal.data) return;
+		setIsSubmitting(true);
+		setError(null);
+		try {
+			await apiFetch(`/api/exames/${modal.data.id}`, { method: "DELETE" });
+			setSuccessMsg("Exame excluído com sucesso!");
+			closeModal();
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) setError(err.message);
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
 		<div>
-			<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-				<h1 className="text-3xl font-bold text-(--main-dark-color)">Exames</h1>
-				<button onClick={openCreateModal} className="px-6 py-2 bg-(--main-color) text-white rounded-lg hover:bg-(--main-light-color) transition-colors font-semibold">
-					+ Novo Exame
-				</button>
-			</div>
+			<AdminPageHeader
+				title="Exames"
+				total={total}
+				action={{ label: "+ Novo Exame", onClick: openCreateModal }}
+			/>
 
-			<SearchBar placeholder="Buscar por nome ou slug..." onSearch={setSearchTerm} />
+			{error && <AdminAlert message={error} onDismiss={() => setError(null)} />}
+			{successMsg && (
+				<AdminAlert
+					message={successMsg}
+					type="success"
+					onDismiss={() => setSuccessMsg(null)}
+				/>
+			)}
 
-			<AdminTable<Exam> columns={columns} data={paginatedExams} onEdit={openEditModal} onDelete={openDeleteModal} />
+			<SearchBar placeholder="Buscar por nome ou slug..." onSearch={handleSearch} />
 
-			{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
+			<AdminTable
+				columns={columns}
+				data={exams}
+				onEdit={openEditModal}
+				onDelete={openDeleteModal}
+				isLoading={isLoading}
+			/>
 
-			{/* Create/Edit Modal */}
-			<AdminModal isOpen={modal.isOpen && (modal.type === "create" || modal.type === "edit")} title={modal.type === "create" ? "Novo Exame" : "Editar Exame"} onClose={() => setModal({ isOpen: false, type: "create", data: null })} onConfirm={handleSubmit} confirmText={modal.type === "create" ? "Criar" : "Salvar"}>
-				<div className="space-y-4">
-					<FormField label="Nome do Exame" name="name" value={formData.name} onChange={(value) => setFormData({ ...formData, name: String(value) })} required placeholder="Ex: Ultrassom Pélvico" />
-					<FormField label="Slug" name="slug" value={formData.slug} onChange={(value) => setFormData({ ...formData, slug: String(value) })} required placeholder="Ex: ultrassom-pelvico" />
-					<FormField label="Procedimento" name="procedureId" type="select" value={formData.procedureId} onChange={(value) => setFormData({ ...formData, procedureId: Number(value) })} options={mockProcedures.map((p) => ({ label: p.name, value: p.id }))} />
-					<FormField label="Informações" name="information" type="textarea" value={formData.information} onChange={(value) => setFormData({ ...formData, information: String(value) })} required placeholder="Descreva o exame..." rows={3} />
-					<FormField label="Preparação" name="preparation" type="textarea" value={formData.preparation} onChange={(value) => setFormData({ ...formData, preparation: String(value) })} required placeholder="Instruções de preparação..." rows={3} />
+			{totalPages > 1 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={setCurrentPage}
+				/>
+			)}
+
+			<AdminModal
+				isOpen={modal.isOpen && (modal.type === "create" || modal.type === "edit")}
+				title={modal.type === "create" ? "Novo Exame" : "Editar Exame"}
+				onClose={closeModal}
+				onConfirm={handleSubmit}
+				confirmText={modal.type === "create" ? "Criar" : "Salvar"}
+				isLoading={isSubmitting}
+				size="lg"
+			>
+				<div className="space-y-1">
+					<FormField
+						label="Nome do Exame"
+						name="name"
+						value={formData.name}
+						onChange={(v) => handleNameChange(String(v))}
+						error={fieldErrors.name}
+						required
+						placeholder="Ex: Ultrassom Pélvico"
+					/>
+					<FormField
+						label="Slug"
+						name="slug"
+						value={formData.slug}
+						onChange={(v) => setFormData({ ...formData, slug: String(v) })}
+						error={fieldErrors.slug}
+						required
+						placeholder="Ex: ultrassom-pelvico"
+					/>
+					<FormField
+						label="Procedimento"
+						name="procedureId"
+						type="select"
+						value={formData.procedureId}
+						onChange={(v) =>
+							setFormData({ ...formData, procedureId: Number(v) })
+						}
+						error={fieldErrors.procedureId}
+						options={procedureOptions}
+						required
+					/>
+					<FormField
+						label="Informações"
+						name="information"
+						type="textarea"
+						value={formData.information}
+						onChange={(v) =>
+							setFormData({ ...formData, information: String(v) })
+						}
+						error={fieldErrors.information}
+						required
+						placeholder="Descreva o exame..."
+						rows={3}
+					/>
+					<FormField
+						label="Preparação"
+						name="preparation"
+						type="textarea"
+						value={formData.preparation}
+						onChange={(v) =>
+							setFormData({ ...formData, preparation: String(v) })
+						}
+						error={fieldErrors.preparation}
+						required
+						placeholder="Instruções de preparação..."
+						rows={3}
+					/>
 				</div>
 			</AdminModal>
 
-			{/* Delete Modal */}
-			<AdminModal isOpen={modal.isOpen && modal.type === "delete"} title="Confirmar Exclusão" onClose={() => setModal({ isOpen: false, type: "create", data: null })} onConfirm={handleDelete} confirmText="Excluir" type="danger">
+			<AdminModal
+				isOpen={modal.isOpen && modal.type === "delete"}
+				title="Confirmar Exclusão"
+				onClose={closeModal}
+				onConfirm={handleDelete}
+				confirmText="Excluir"
+				type="danger"
+				isLoading={isSubmitting}
+			>
 				<p className="text-gray-700">
 					Tem certeza que deseja excluir <strong>{modal.data?.name}</strong>?
 				</p>

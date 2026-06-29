@@ -11,3 +11,5 @@ export type { FormFieldProps } from './AdminForm';
 export { default as DashboardCard } from './DashboardCard';
 export { default as SearchBar } from './SearchBar';
 export { default as Pagination } from './Pagination';
+export { default as AdminAlert } from './AdminAlert';
+export { default as AdminPageHeader } from './AdminPageHeader';

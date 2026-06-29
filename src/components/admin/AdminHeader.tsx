@@ -1,28 +1,49 @@
-import Link from 'next/link';
+'use client';
+
+import { useRouter } from 'next/navigation';
 
 interface AdminHeaderProps {
   title?: string;
   subtitle?: string;
+  userName?: string;
 }
 
-export default function AdminHeader({ title = 'Painel Administrativo', subtitle }: AdminHeaderProps) {
+export default function AdminHeader({
+  title = 'Painel Administrativo',
+  subtitle,
+  userName,
+}: AdminHeaderProps) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/adm/login');
+    router.refresh();
+  };
+
   return (
     <header className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
-      <div className="flex items-center justify-between px-4 md:px-8 py-4 md:py-6">
+      <div className="flex items-center justify-between px-4 md:px-8 py-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-(--main-dark-color)">{title}</h1>
-          {subtitle && <p className="text-gray-600 text-sm md:text-base">{subtitle}</p>}
+          <h1 className="text-xl md:text-2xl font-bold text-(--main-dark-color)">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-gray-500 text-sm">{subtitle}</p>
+          )}
         </div>
 
-        <div className="flex items-center gap-4">
-          <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            🔔
-          </button>
-          <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            ⚙️
-          </button>
-          <button className="p-2 rounded-lg hover:bg-red-100 transition-colors text-red-600">
-            🚪
+        <div className="flex items-center gap-3">
+          {userName && (
+            <span className="hidden sm:block text-sm text-gray-600">
+              Olá, <strong>{userName}</strong>
+            </span>
+          )}
+          <button
+            onClick={handleLogout}
+            className="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+          >
+            Sair
           </button>
         </div>
       </div>

@@ -1,70 +1,125 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AdminTable, { TableColumn } from "@/components/admin/AdminTable";
 import AdminModal from "@/components/admin/AdminModal";
-import SearchBar from "@/components/admin/SearchBar";
+import AdminAlert from "@/components/admin/AdminAlert";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import Pagination from "@/components/admin/Pagination";
-import { mockReviews } from "@/lib/admin/mockData";
-import { Review } from "@/lib/admin/types";
 import { FormField } from "@/components/admin/AdminForm";
+import { useAdminList } from "@/hooks/useAdminList";
+import { apiFetch, ApiRequestError } from "@/lib/admin/api";
+import { Review } from "@/lib/admin/types";
+import { formatDate, truncateText } from "@/lib/admin/utils";
 
-const columns: TableColumn<Review>[] = [
-	{
-		key: "rating",
-		label: "Avaliação",
-		render: (value) => `${"⭐".repeat(value)} (${value}/5)`,
-	},
-	{
-		key: "text",
-		label: "Comentário",
-		render: (value) => (value ? value.substring(0, 50) + "..." : "Sem comentário"),
-	},
-	{
-		key: "status",
-		label: "Status",
-		render: (value) => <span className={`px-3 py-1 rounded text-sm font-semibold ${value ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}>{value ? "Publicada" : "Pendente"}</span>,
-	},
-	{
-		key: "createdAt",
-		label: "Data",
-		render: (value) => new Date(value).toLocaleDateString("pt-BR"),
-	},
-];
+function StarRating({ rating }: { rating: number }) {
+	return (
+		<div className="flex items-center gap-1">
+			{Array.from({ length: 5 }, (_, i) => (
+				<span
+					key={i}
+					className={i < rating ? "text-yellow-400" : "text-gray-200"}
+				>
+					★
+				</span>
+			))}
+			<span className="text-xs text-gray-500 ml-1">({rating}/5)</span>
+		</div>
+	);
+}
 
 export default function ReviewsPage() {
-	const [reviews, setReviews] = useState<Review[]>(mockReviews);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
+	const [statusFilter, setStatusFilter] = useState<string>("");
+
+	const extraParams = useMemo(
+		() => (statusFilter ? { status: statusFilter } : {}),
+		[statusFilter],
+	);
+
+	const {
+		data: reviews,
+		currentPage,
+		setCurrentPage,
+		totalPages,
+		total,
+		isLoading,
+		error,
+		setError,
+		refetch,
+	} = useAdminList<Review>("/api/avaliacoes", { extraParams });
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [statusFilter, setCurrentPage]);
+
 	const [modal, setModal] = useState<{
 		isOpen: boolean;
-		type: "create" | "edit" | "delete" | "view";
+		type: "edit" | "delete" | "view";
 		data: Review | null;
-	}>({
-		isOpen: false,
-		type: "create",
-		data: null,
-	});
+	}>({ isOpen: false, type: "view", data: null });
+
 	const [formData, setFormData] = useState({ rating: 5, text: "", status: true });
-	const itemsPerPage = 10;
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	const filteredReviews = useMemo(() => {
-		return reviews.filter((review) => review.text?.toLowerCase().includes(searchTerm.toLowerCase()) || searchTerm === "" || (searchTerm === "publicada" && review.status) || (searchTerm === "pendente" && !review.status));
-	}, [reviews, searchTerm]);
+	const columns: TableColumn<Review>[] = [
+		{
+			key: "rating",
+			label: "Avaliação",
+			render: (value) => <StarRating rating={value} />,
+		},
+		{
+			key: "text",
+			label: "Comentário",
+			render: (value) =>
+				value ? truncateText(value, 60) : (
+					<span className="text-gray-400 italic">Sem comentário</span>
+				),
+		},
+		{
+			key: "status",
+			label: "Status",
+			render: (value) => (
+				<span
+					className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+						value
+							? "bg-green-100 text-green-700"
+							: "bg-amber-100 text-amber-700"
+					}`}
+				>
+					{value ? "Publicada" : "Pendente"}
+				</span>
+			),
+		},
+		{
+			key: "createdAt",
+			label: "Data",
+			render: (value) => formatDate(value),
+		},
+	];
 
-	const totalPages = Math.ceil(filteredReviews.length / itemsPerPage);
-	const paginatedReviews = useMemo(() => {
-		const start = (currentPage - 1) * itemsPerPage;
-		return filteredReviews.slice(start, start + itemsPerPage);
-	}, [filteredReviews, currentPage]);
+	const closeModal = () => {
+		setModal({ isOpen: false, type: "view", data: null });
+		setFieldErrors({});
+	};
 
 	const openViewModal = (review: Review) => {
-		setFormData({ rating: review.rating, text: review.text || "", status: review.status });
+		setFormData({
+			rating: review.rating,
+			text: review.text || "",
+			status: review.status,
+		});
 		setModal({ isOpen: true, type: "view", data: review });
 	};
 
 	const openEditModal = (review: Review) => {
-		setFormData({ rating: review.rating, text: review.text || "", status: review.status });
+		setFormData({
+			rating: review.rating,
+			text: review.text || "",
+			status: review.status,
+		});
+		setFieldErrors({});
 		setModal({ isOpen: true, type: "edit", data: review });
 	};
 
@@ -72,76 +127,185 @@ export default function ReviewsPage() {
 		setModal({ isOpen: true, type: "delete", data: review });
 	};
 
-	const handleSubmit = () => {
-		if (modal.type === "edit" && modal.data) {
-			setReviews(
-				reviews.map((r) =>
-					r.id === modal.data?.id
-						? {
-								...r,
-								...formData,
-								updatedAt: new Date().toISOString().split("T")[0],
-							}
-						: r,
-				),
-			);
+	const handleSubmit = async () => {
+		if (!modal.data) return;
+		setIsSubmitting(true);
+		setFieldErrors({});
+		setError(null);
+		try {
+			await apiFetch(`/api/avaliacoes/${modal.data.id}`, {
+				method: "PUT",
+				body: JSON.stringify(formData),
+			});
+			setSuccessMsg("Avaliação atualizada com sucesso!");
+			closeModal();
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) {
+				setFieldErrors(err.fieldErrors);
+				setError(err.message);
+			}
+		} finally {
+			setIsSubmitting(false);
 		}
-		setModal({ isOpen: false, type: "create", data: null });
 	};
 
-	const handleDelete = () => {
-		if (modal.data) {
-			setReviews(reviews.filter((r) => r.id !== modal.data?.id));
+	const handleDelete = async () => {
+		if (!modal.data) return;
+		setIsSubmitting(true);
+		setError(null);
+		try {
+			await apiFetch(`/api/avaliacoes/${modal.data.id}`, { method: "DELETE" });
+			setSuccessMsg("Avaliação excluída com sucesso!");
+			closeModal();
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) setError(err.message);
+		} finally {
+			setIsSubmitting(false);
 		}
-		setModal({ isOpen: false, type: "create", data: null });
 	};
 
 	return (
 		<div>
-			<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-				<h1 className="text-3xl font-bold text-(--main-dark-color)">Avaliações</h1>
+			<AdminPageHeader title="Avaliações" total={total} />
+
+			{error && <AdminAlert message={error} onDismiss={() => setError(null)} />}
+			{successMsg && (
+				<AdminAlert
+					message={successMsg}
+					type="success"
+					onDismiss={() => setSuccessMsg(null)}
+				/>
+			)}
+
+			<div className="mb-6">
+				<select
+					value={statusFilter}
+					onChange={(e) => setStatusFilter(e.target.value)}
+					className="px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-(--main-color)/30"
+				>
+					<option value="">Todos os status</option>
+					<option value="true">Publicadas</option>
+					<option value="false">Pendentes</option>
+				</select>
 			</div>
 
-			<SearchBar placeholder="Buscar por comentário ou status..." onSearch={setSearchTerm} />
+			<AdminTable
+				columns={columns}
+				data={reviews}
+				onView={openViewModal}
+				onEdit={openEditModal}
+				onDelete={openDeleteModal}
+				isLoading={isLoading}
+			/>
 
-			<AdminTable<Review> columns={columns} data={paginatedReviews} onView={openViewModal} onEdit={openEditModal} onDelete={openDeleteModal} />
+			{totalPages > 1 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={setCurrentPage}
+				/>
+			)}
 
-			{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
-
-			{/* View Modal */}
-			<AdminModal isOpen={modal.isOpen && modal.type === "view"} title="Visualizar Avaliação" onClose={() => setModal({ isOpen: false, type: "create", data: null })}>
+			<AdminModal
+				isOpen={modal.isOpen && modal.type === "view"}
+				title="Visualizar Avaliação"
+				onClose={closeModal}
+				cancelText="Fechar"
+			>
 				<div className="space-y-4">
 					<div>
-						<p className="text-sm text-gray-600 mb-1">Avaliação</p>
-						<p className="text-2xl">{"⭐".repeat(formData.rating)}</p>
+						<p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+							Avaliação
+						</p>
+						<StarRating rating={formData.rating} />
 					</div>
 					<div>
-						<p className="text-sm text-gray-600 mb-1">Comentário</p>
-						<p className="text-gray-800">{formData.text || "Sem comentário"}</p>
+						<p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+							Comentário
+						</p>
+						<p className="text-gray-800 text-sm leading-relaxed">
+							{formData.text || "Sem comentário"}
+						</p>
 					</div>
 					<div>
-						<p className="text-sm text-gray-600 mb-1">Status</p>
-						<p className="text-gray-800">{formData.status ? "Publicada" : "Pendente"}</p>
+						<p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+							Status
+						</p>
+						<p className="text-gray-800 text-sm">
+							{formData.status ? "Publicada" : "Pendente"}
+						</p>
 					</div>
+					{modal.data && (
+						<div>
+							<p className="text-xs font-semibold text-gray-500 uppercase mb-1">
+								Data
+							</p>
+							<p className="text-gray-800 text-sm">
+								{formatDate(modal.data.createdAt)}
+							</p>
+						</div>
+					)}
 				</div>
 			</AdminModal>
 
-			{/* Edit Modal */}
-			<AdminModal isOpen={modal.isOpen && modal.type === "edit"} title="Editar Avaliação" onClose={() => setModal({ isOpen: false, type: "create", data: null })} onConfirm={handleSubmit} confirmText="Salvar">
-				<div className="space-y-4">
-					<FormField label="Avaliação" name="rating" type="number" value={formData.rating} onChange={(value) => setFormData({ ...formData, rating: Math.min(5, Math.max(1, Number(value))) })} />
-					<FormField label="Comentário" name="text" type="textarea" value={formData.text} onChange={(value) => setFormData({ ...formData, text: String(value) })} rows={3} />
-					<div className="flex items-center gap-2">
-						<input type="checkbox" id="status" checked={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.checked })} className="w-4 h-4" />
-						<label htmlFor="status" className="text-sm font-medium text-gray-700">
+			<AdminModal
+				isOpen={modal.isOpen && modal.type === "edit"}
+				title="Editar Avaliação"
+				onClose={closeModal}
+				onConfirm={handleSubmit}
+				confirmText="Salvar"
+				isLoading={isSubmitting}
+			>
+				<div className="space-y-1">
+					<FormField
+						label="Avaliação (1-5)"
+						name="rating"
+						type="number"
+						value={formData.rating}
+						onChange={(v) =>
+							setFormData({
+								...formData,
+								rating: Math.min(5, Math.max(1, Number(v))),
+							})
+						}
+						error={fieldErrors.rating}
+					/>
+					<FormField
+						label="Comentário"
+						name="text"
+						type="textarea"
+						value={formData.text}
+						onChange={(v) => setFormData({ ...formData, text: String(v) })}
+						error={fieldErrors.text}
+						rows={4}
+					/>
+					<label className="flex items-center gap-2 mt-2 cursor-pointer">
+						<input
+							type="checkbox"
+							checked={formData.status}
+							onChange={(e) =>
+								setFormData({ ...formData, status: e.target.checked })
+							}
+							className="w-4 h-4 rounded border-gray-300"
+						/>
+						<span className="text-sm font-medium text-gray-700">
 							Publicar avaliação
-						</label>
-					</div>
+						</span>
+					</label>
 				</div>
 			</AdminModal>
 
-			{/* Delete Modal */}
-			<AdminModal isOpen={modal.isOpen && modal.type === "delete"} title="Confirmar Exclusão" onClose={() => setModal({ isOpen: false, type: "create", data: null })} onConfirm={handleDelete} confirmText="Excluir" type="danger">
+			<AdminModal
+				isOpen={modal.isOpen && modal.type === "delete"}
+				title="Confirmar Exclusão"
+				onClose={closeModal}
+				onConfirm={handleDelete}
+				confirmText="Excluir"
+				type="danger"
+				isLoading={isSubmitting}
+			>
 				<p className="text-gray-700">Tem certeza que deseja excluir esta avaliação?</p>
 				<p className="text-sm text-gray-500 mt-2">Esta ação não pode ser desfeita.</p>
 			</AdminModal>

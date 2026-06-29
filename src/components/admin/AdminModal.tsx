@@ -12,7 +12,14 @@ interface AdminModalProps {
   cancelText?: string;
   type?: 'default' | 'danger';
   isLoading?: boolean;
+  size?: 'sm' | 'md' | 'lg';
 }
+
+const sizeClasses = {
+  sm: 'max-w-md',
+  md: 'max-w-lg',
+  lg: 'max-w-2xl',
+};
 
 export default function AdminModal({
   isOpen,
@@ -24,59 +31,57 @@ export default function AdminModal({
   cancelText = 'Cancelar',
   type = 'default',
   isLoading = false,
+  size = 'md',
 }: AdminModalProps) {
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Overlay */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-(--main-dark-color)">{title}</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-            >
-              ✕
-            </button>
-          </div>
+      <div
+        className={`relative bg-white rounded-xl shadow-2xl w-full ${sizeClasses[size]} max-h-[90vh] flex flex-col`}
+      >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 className="text-lg font-bold text-(--main-dark-color)">{title}</h2>
+          <button
+            onClick={onClose}
+            disabled={isLoading}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Fechar"
+          >
+            ×
+          </button>
+        </div>
 
-          {/* Content */}
-          <div className="p-6">{children}</div>
+        <div className="p-6 overflow-y-auto flex-1">{children}</div>
 
-          {/* Footer */}
-          <div className="flex gap-3 p-6 border-t border-gray-200 justify-end">
+        <div className="flex gap-3 px-6 py-4 border-t border-gray-100 justify-end">
+          <button
+            onClick={onClose}
+            disabled={isLoading}
+            className="px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            {cancelText}
+          </button>
+          {onConfirm && (
             <button
-              onClick={onClose}
+              onClick={onConfirm}
               disabled={isLoading}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+              className={`px-4 py-2 text-sm font-medium rounded-lg text-white transition-colors disabled:opacity-50 ${
+                type === 'danger'
+                  ? 'bg-red-600 hover:bg-red-700'
+                  : 'bg-(--main-color) hover:bg-(--main-light-color)'
+              }`}
             >
-              {cancelText}
+              {isLoading ? 'Processando...' : confirmText}
             </button>
-            {onConfirm && (
-              <button
-                onClick={onConfirm}
-                disabled={isLoading}
-                className={`px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-50 ${
-                  type === 'danger'
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-(--main-color) hover:bg-(--main-light-color)'
-                }`}
-              >
-                {isLoading ? 'Processando...' : confirmText}
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

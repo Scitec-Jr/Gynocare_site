@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { usersService } from '@/services/users.service';
-import { userSchema } from '@/lib/validations/auth';
+import { userUpdateSchema } from '@/lib/validations/auth';
 import { getSession } from '@/lib/auth/session';
+import { hashPassword } from '@/lib/auth/passwords';
+import { usersRepository } from '@/repositories/users.repository';
 
 export async function GET(
   request: NextRequest,
@@ -41,7 +43,7 @@ export async function PUT(
 
     const body = await request.json();
 
-    const validation = userSchema.safeParse(body);
+    const validation = userUpdateSchema.safeParse(body);
 
     if (!validation.success) {
       const errors = validation.error.issues.map(e => ({
@@ -55,14 +57,18 @@ export async function PUT(
       );
     }
 
-    const user = await usersService.updateUser(
-      userId,
-      validation.data.name,
-      validation.data.email,
-      validation.data.role || 'secretary'
-    );
+    const { name, email, role, status, password } = validation.data;
 
-    return NextResponse.json(user);
+    const user = await usersService.updateUser(userId, name, email, role);
+
+    if (password) {
+      const passwordHash = await hashPassword(password);
+      await usersRepository.updatePassword(userId, passwordHash);
+    }
+
+    await usersService.updateStatus(userId, status);
+
+    return NextResponse.json({ ...user, status });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao atualizar usuário';
 

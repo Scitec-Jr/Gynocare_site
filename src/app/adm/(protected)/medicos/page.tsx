@@ -1,62 +1,74 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import AdminTable, { TableColumn } from "@/components/admin/AdminTable";
 import AdminModal from "@/components/admin/AdminModal";
-import AdminForm, { FormField } from "@/components/admin/AdminForm";
+import AdminAlert from "@/components/admin/AdminAlert";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import SearchBar from "@/components/admin/SearchBar";
 import Pagination from "@/components/admin/Pagination";
-import { mockDoctors } from "@/lib/admin/mockData";
+import { FormField } from "@/components/admin/AdminForm";
+import { useAdminList } from "@/hooks/useAdminList";
+import { apiFetch, ApiRequestError } from "@/lib/admin/api";
 import { Doctor } from "@/lib/admin/types";
+import { formatDate } from "@/lib/admin/utils";
 
 const columns: TableColumn<Doctor>[] = [
-	{ key: "name", label: "Nome", sortable: true },
-	{ key: "graduation", label: "Especialidade", sortable: true },
+	{ key: "name", label: "Nome" },
 	{
 		key: "createdAt",
 		label: "Criado em",
-		render: (value) => new Date(value).toLocaleDateString("pt-BR"),
+		render: (value) => formatDate(value),
 	},
 	{
 		key: "updatedAt",
 		label: "Atualizado em",
-		render: (value) => new Date(value).toLocaleDateString("pt-BR"),
+		render: (value) => formatDate(value),
 	},
 ];
 
 export default function DoctorsPage() {
-	const [doctors, setDoctors] = useState<Doctor[]>(mockDoctors);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
+	const {
+		data: doctors,
+		currentPage,
+		setCurrentPage,
+		totalPages,
+		total,
+		handleSearch,
+		isLoading,
+		error,
+		setError,
+		refetch,
+	} = useAdminList<Doctor>("/api/doutores");
+
 	const [modal, setModal] = useState<{
 		isOpen: boolean;
 		type: "create" | "edit" | "delete";
 		data: Doctor | null;
-	}>({
-		isOpen: false,
-		type: "create",
-		data: null,
-	});
+	}>({ isOpen: false, type: "create", data: null });
+
 	const [formData, setFormData] = useState({ name: "", graduation: "" });
-	const itemsPerPage = 10;
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	const filteredDoctors = useMemo(() => {
-		return doctors.filter((doc) => doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || doc.graduation.toLowerCase().includes(searchTerm.toLowerCase()));
-	}, [doctors, searchTerm]);
-
-	const totalPages = Math.ceil(filteredDoctors.length / itemsPerPage);
-	const paginatedDoctors = useMemo(() => {
-		const start = (currentPage - 1) * itemsPerPage;
-		return filteredDoctors.slice(start, start + itemsPerPage);
-	}, [filteredDoctors, currentPage]);
+	const closeModal = () => {
+		setModal({ isOpen: false, type: "create", data: null });
+		setFieldErrors({});
+	};
 
 	const openCreateModal = () => {
 		setFormData({ name: "", graduation: "" });
+		setFieldErrors({});
 		setModal({ isOpen: true, type: "create", data: null });
 	};
 
 	const openEditModal = (doctor: Doctor) => {
-		setFormData({ name: doctor.name, graduation: doctor.graduation });
+		setFormData({
+			name: doctor.name,
+			graduation: doctor.graduation || "Médico",
+		});
+		setFieldErrors({});
 		setModal({ isOpen: true, type: "edit", data: doctor });
 	};
 
@@ -64,63 +76,128 @@ export default function DoctorsPage() {
 		setModal({ isOpen: true, type: "delete", data: doctor });
 	};
 
-	const handleSubmit = () => {
-		if (modal.type === "create") {
-			const newDoctor: Doctor = {
-				id: Math.max(...doctors.map((d) => d.id), 0) + 1,
-				...formData,
-				createdAt: new Date().toISOString().split("T")[0],
-				updatedAt: new Date().toISOString().split("T")[0],
-			};
-			setDoctors([...doctors, newDoctor]);
-		} else if (modal.type === "edit" && modal.data) {
-			setDoctors(
-				doctors.map((d) =>
-					d.id === modal.data?.id
-						? {
-								...d,
-								...formData,
-								updatedAt: new Date().toISOString().split("T")[0],
-							}
-						: d,
-				),
-			);
+	const handleSubmit = async () => {
+		setIsSubmitting(true);
+		setFieldErrors({});
+		setError(null);
+		try {
+			if (modal.type === "create") {
+				await apiFetch("/api/doutores", {
+					method: "POST",
+					body: JSON.stringify(formData),
+				});
+				setSuccessMsg("Médico criado com sucesso!");
+			} else if (modal.type === "edit" && modal.data) {
+				await apiFetch(`/api/doutores/${modal.data.id}`, {
+					method: "PUT",
+					body: JSON.stringify(formData),
+				});
+				setSuccessMsg("Médico atualizado com sucesso!");
+			}
+			closeModal();
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) {
+				setFieldErrors(err.fieldErrors);
+				setError(err.message);
+			}
+		} finally {
+			setIsSubmitting(false);
 		}
-		setModal({ isOpen: false, type: "create", data: null });
 	};
 
-	const handleDelete = () => {
-		if (modal.data) {
-			setDoctors(doctors.filter((d) => d.id !== modal.data?.id));
+	const handleDelete = async () => {
+		if (!modal.data) return;
+		setIsSubmitting(true);
+		setError(null);
+		try {
+			await apiFetch(`/api/doutores/${modal.data.id}`, { method: "DELETE" });
+			setSuccessMsg("Médico excluído com sucesso!");
+			closeModal();
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) setError(err.message);
+		} finally {
+			setIsSubmitting(false);
 		}
-		setModal({ isOpen: false, type: "create", data: null });
 	};
 
 	return (
 		<div>
-			<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-				<h1 className="text-3xl font-bold text-(--main-dark-color)">Médicos</h1>
-				<button onClick={openCreateModal} className="px-6 py-2 bg-(--main-color) text-white rounded-lg hover:bg-(--main-light-color) transition-colors font-semibold">
-					+ Novo Médico
-				</button>
-			</div>
+			<AdminPageHeader
+				title="Médicos"
+				total={total}
+				action={{ label: "+ Novo Médico", onClick: openCreateModal }}
+			/>
 
-			<SearchBar placeholder="Buscar por nome ou especialidade..." onSearch={setSearchTerm} />
+			{error && <AdminAlert message={error} onDismiss={() => setError(null)} />}
+			{successMsg && (
+				<AdminAlert
+					message={successMsg}
+					type="success"
+					onDismiss={() => setSuccessMsg(null)}
+				/>
+			)}
 
-			<AdminTable<Doctor> columns={columns} data={paginatedDoctors} onEdit={openEditModal} onDelete={openDeleteModal} />
+			<SearchBar placeholder="Buscar por nome..." onSearch={handleSearch} />
 
-			{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
+			<AdminTable
+				columns={columns}
+				data={doctors}
+				onEdit={openEditModal}
+				onDelete={openDeleteModal}
+				isLoading={isLoading}
+			/>
 
-			{/* Create/Edit Modal */}
-			<AdminModal isOpen={modal.isOpen && (modal.type === "create" || modal.type === "edit")} title={modal.type === "create" ? "Novo Médico" : "Editar Médico"} onClose={() => setModal({ isOpen: false, type: "create", data: null })} onConfirm={handleSubmit} confirmText={modal.type === "create" ? "Criar" : "Salvar"}>
-				<div className="space-y-4">
-					<FormField label="Nome Completo" name="name" value={formData.name} onChange={(value) => setFormData({ ...formData, name: String(value) })} required placeholder="Ex: Dra. Maria Silva" />
-					<FormField label="Especialidade / CRM" name="graduation" type="textarea" value={formData.graduation} onChange={(value) => setFormData({ ...formData, graduation: String(value) })} required placeholder="Ex: Ginecologista | CRM: 12345" rows={3} />
+			{totalPages > 1 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={setCurrentPage}
+				/>
+			)}
+
+			<AdminModal
+				isOpen={modal.isOpen && (modal.type === "create" || modal.type === "edit")}
+				title={modal.type === "create" ? "Novo Médico" : "Editar Médico"}
+				onClose={closeModal}
+				onConfirm={handleSubmit}
+				confirmText={modal.type === "create" ? "Criar" : "Salvar"}
+				isLoading={isSubmitting}
+			>
+				<div className="space-y-1">
+					<FormField
+						label="Nome Completo"
+						name="name"
+						value={formData.name}
+						onChange={(v) => setFormData({ ...formData, name: String(v) })}
+						error={fieldErrors.name}
+						required
+						placeholder="Ex: Dra. Maria Silva"
+					/>
+					<FormField
+						label="Especialidade / CRM"
+						name="graduation"
+						type="textarea"
+						value={formData.graduation}
+						onChange={(v) => setFormData({ ...formData, graduation: String(v) })}
+						error={fieldErrors.graduation}
+						required
+						placeholder="Ex: Ginecologista | CRM: 12345"
+						rows={2}
+					/>
 				</div>
 			</AdminModal>
 
-			{/* Delete Modal */}
-			<AdminModal isOpen={modal.isOpen && modal.type === "delete"} title="Confirmar Exclusão" onClose={() => setModal({ isOpen: false, type: "create", data: null })} onConfirm={handleDelete} confirmText="Excluir" type="danger">
+			<AdminModal
+				isOpen={modal.isOpen && modal.type === "delete"}
+				title="Confirmar Exclusão"
+				onClose={closeModal}
+				onConfirm={handleDelete}
+				confirmText="Excluir"
+				type="danger"
+				isLoading={isSubmitting}
+			>
 				<p className="text-gray-700">
 					Tem certeza que deseja excluir <strong>{modal.data?.name}</strong>?
 				</p>

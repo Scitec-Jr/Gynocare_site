@@ -14,6 +14,17 @@ export const userSchema = z.object({
   status: z.boolean().default(true),
 });
 
+export const userUpdateSchema = z.object({
+  name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres').max(150),
+  email: z.string().email('Email inválido'),
+  password: z
+    .string()
+    .min(6, 'Senha deve ter no mínimo 6 caracteres')
+    .optional(),
+  role: z.enum(['admin', 'doctor', 'secretary']),
+  status: z.boolean().default(true),
+});
+
 export const updatePasswordSchema = z.object({
   currentPassword: z.string().min(6),
   newPassword: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres'),
@@ -25,4 +36,5 @@ export const updatePasswordSchema = z.object({
 
 export type LoginRequest = z.infer<typeof loginSchema>;
 export type UserRequest = z.infer<typeof userSchema>;
+export type UserUpdateRequest = z.infer<typeof userUpdateSchema>;
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordSchema>;

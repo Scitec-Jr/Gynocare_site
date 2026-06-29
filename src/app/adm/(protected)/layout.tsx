@@ -1,16 +1,17 @@
+import { redirect } from 'next/navigation';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { getSession } from '@/lib/auth/session';
 
-export default function ProtectedLayout({
+export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // TODO: Add authentication check here
-  // If not authenticated, redirect to /adm/login
+  const session = await getSession();
 
-  return (
-    <AdminLayout>
-      {children}
-    </AdminLayout>
-  );
+  if (!session) {
+    redirect('/adm/login');
+  }
+
+  return <AdminLayout userName={session.name}>{children}</AdminLayout>;
 }

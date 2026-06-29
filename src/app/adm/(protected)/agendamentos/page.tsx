@@ -1,91 +1,110 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AdminTable, { TableColumn } from "@/components/admin/AdminTable";
 import AdminModal from "@/components/admin/AdminModal";
+import AdminAlert from "@/components/admin/AdminAlert";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import SearchBar from "@/components/admin/SearchBar";
 import Pagination from "@/components/admin/Pagination";
-import { mockAppointments, mockDoctors, mockExams } from "@/lib/admin/mockData";
-import { Appointment } from "@/lib/admin/types";
 import { FormField } from "@/components/admin/AdminForm";
-
-const columns: TableColumn<Appointment>[] = [
-	{
-		key: "doctorId",
-		label: "Médico",
-		render: (value) => {
-			const doctor = mockDoctors.find((d) => d.id === value);
-			return doctor?.name || "N/A";
-		},
-	},
-	{
-		key: "examId",
-		label: "Exame",
-		render: (value) => {
-			const exam = mockExams.find((e) => e.id === value);
-			return exam?.name || "N/A";
-		},
-	},
-	{ key: "date", label: "Data", sortable: true },
-	{ key: "startTime", label: "Horário", sortable: true },
-	{ key: "phone", label: "Telefone" },
-	{
-		key: "createdAt",
-		label: "Criado em",
-		render: (value) => new Date(value).toLocaleDateString("pt-BR"),
-	},
-];
+import { useAdminList } from "@/hooks/useAdminList";
+import { apiFetch, ApiRequestError, fetchAll } from "@/lib/admin/api";
+import { Appointment, Doctor, Exam } from "@/lib/admin/types";
+import { formatDate, maskPhone } from "@/lib/admin/utils";
 
 export default function AppointmentsPage() {
-	const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
+	const {
+		data: appointments,
+		currentPage,
+		setCurrentPage,
+		totalPages,
+		total,
+		handleSearch,
+		isLoading,
+		error,
+		setError,
+		refetch,
+	} = useAdminList<Appointment>("/api/agendamentos");
+
+	const [doctors, setDoctors] = useState<Doctor[]>([]);
+	const [exams, setExams] = useState<Exam[]>([]);
 	const [modal, setModal] = useState<{
 		isOpen: boolean;
 		type: "create" | "edit" | "delete";
 		data: Appointment | null;
-	}>({
-		isOpen: false,
-		type: "create",
-		data: null,
-	});
+	}>({ isOpen: false, type: "create", data: null });
+
 	const [formData, setFormData] = useState({
-		doctorId: 1,
-		examId: 1,
+		doctorId: 0,
+		examId: 0,
 		date: "",
 		startTime: "",
 		endTime: "",
 		phone: "",
 	});
-	const itemsPerPage = 10;
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	const filteredAppointments = useMemo(() => {
-		return appointments.filter(
-			(apt) =>
-				mockDoctors
-					.find((d) => d.id === apt.doctorId)
-					?.name.toLowerCase()
-					.includes(searchTerm.toLowerCase()) ||
-				apt.phone.includes(searchTerm) ||
-				apt.date.includes(searchTerm),
-		);
-	}, [appointments, searchTerm]);
+	const doctorMap = useMemo(
+		() => new Map(doctors.map((d) => [d.id, d.name])),
+		[doctors],
+	);
+	const examMap = useMemo(
+		() => new Map(exams.map((e) => [e.id, e.name])),
+		[exams],
+	);
 
-	const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
-	const paginatedAppointments = useMemo(() => {
-		const start = (currentPage - 1) * itemsPerPage;
-		return filteredAppointments.slice(start, start + itemsPerPage);
-	}, [filteredAppointments, currentPage]);
+	const columns: TableColumn<Appointment>[] = [
+		{
+			key: "doctorId",
+			label: "Médico",
+			render: (value) => doctorMap.get(value) || "—",
+		},
+		{
+			key: "examId",
+			label: "Exame",
+			render: (value) => examMap.get(value) || "—",
+		},
+		{
+			key: "date",
+			label: "Data",
+			render: (value) => formatDate(value),
+		},
+		{ key: "startTime", label: "Início" },
+		{ key: "endTime", label: "Fim" },
+		{ key: "phone", label: "Telefone" },
+	];
+
+	useEffect(() => {
+		Promise.all([
+			fetchAll<Doctor>("/api/doutores"),
+			fetchAll<Exam>("/api/exames"),
+		]).then(([d, e]) => {
+			setDoctors(d);
+			setExams(e);
+		});
+	}, []);
+
+	const doctorOptions = doctors.map((d) => ({ label: d.name, value: d.id }));
+	const examOptions = exams.map((e) => ({ label: e.name, value: e.id }));
+
+	const closeModal = () => {
+		setModal({ isOpen: false, type: "create", data: null });
+		setFieldErrors({});
+	};
 
 	const openCreateModal = () => {
 		setFormData({
-			doctorId: 1,
-			examId: 1,
+			doctorId: doctors[0]?.id || 0,
+			examId: exams[0]?.id || 0,
 			date: "",
 			startTime: "",
 			endTime: "",
 			phone: "",
 		});
+		setFieldErrors({});
 		setModal({ isOpen: true, type: "create", data: null });
 	};
 
@@ -93,11 +112,12 @@ export default function AppointmentsPage() {
 		setFormData({
 			doctorId: appointment.doctorId,
 			examId: appointment.examId,
-			date: appointment.date,
-			startTime: appointment.startTime,
-			endTime: appointment.endTime,
+			date: appointment.date.split("T")[0],
+			startTime: appointment.startTime.slice(0, 5),
+			endTime: appointment.endTime.slice(0, 5),
 			phone: appointment.phone,
 		});
+		setFieldErrors({});
 		setModal({ isOpen: true, type: "edit", data: appointment });
 	};
 
@@ -105,78 +125,193 @@ export default function AppointmentsPage() {
 		setModal({ isOpen: true, type: "delete", data: appointment });
 	};
 
-	const handleSubmit = () => {
-		if (modal.type === "create") {
-			const newAppointment: Appointment = {
-				id: Math.max(...appointments.map((a) => a.id), 0) + 1,
+	const handleSubmit = async () => {
+		setIsSubmitting(true);
+		setFieldErrors({});
+		setError(null);
+		try {
+			const payload = {
 				...formData,
-				createdAt: new Date().toISOString().split("T")[0],
-				updatedAt: new Date().toISOString().split("T")[0],
+				startTime: formData.startTime.slice(0, 5),
+				endTime: formData.endTime.slice(0, 5),
 			};
-			setAppointments([...appointments, newAppointment]);
-		} else if (modal.type === "edit" && modal.data) {
-			setAppointments(
-				appointments.map((a) =>
-					a.id === modal.data?.id
-						? {
-								...a,
-								...formData,
-								updatedAt: new Date().toISOString().split("T")[0],
-							}
-						: a,
-				),
-			);
+
+			if (modal.type === "create") {
+				await apiFetch("/api/agendamentos", {
+					method: "POST",
+					body: JSON.stringify(payload),
+				});
+				setSuccessMsg("Agendamento criado com sucesso!");
+			} else if (modal.type === "edit" && modal.data) {
+				await apiFetch(`/api/agendamentos/${modal.data.id}`, {
+					method: "PUT",
+					body: JSON.stringify(payload),
+				});
+				setSuccessMsg("Agendamento atualizado com sucesso!");
+			}
+			closeModal();
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) {
+				setFieldErrors(err.fieldErrors);
+				setError(err.message);
+			}
+		} finally {
+			setIsSubmitting(false);
 		}
-		setModal({ isOpen: false, type: "create", data: null });
 	};
 
-	const handleDelete = () => {
-		if (modal.data) {
-			setAppointments(appointments.filter((a) => a.id !== modal.data?.id));
+	const handleDelete = async () => {
+		if (!modal.data) return;
+		setIsSubmitting(true);
+		setError(null);
+		try {
+			await apiFetch(`/api/agendamentos/${modal.data.id}`, { method: "DELETE" });
+			setSuccessMsg("Agendamento excluído com sucesso!");
+			closeModal();
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) setError(err.message);
+		} finally {
+			setIsSubmitting(false);
 		}
-		setModal({ isOpen: false, type: "create", data: null });
 	};
 
 	return (
 		<div>
-			<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-				<h1 className="text-3xl font-bold text-(--main-dark-color)">Agendamentos</h1>
-				<button onClick={openCreateModal} className="px-6 py-2 bg-(--main-color) text-white rounded-lg hover:bg-(--main-light-color) transition-colors font-semibold">
-					+ Novo Agendamento
-				</button>
-			</div>
+			<AdminPageHeader
+				title="Agendamentos"
+				total={total}
+				action={{ label: "+ Novo Agendamento", onClick: openCreateModal }}
+			/>
 
-			<SearchBar placeholder="Buscar por médico, telefone ou data..." onSearch={setSearchTerm} />
+			{error && <AdminAlert message={error} onDismiss={() => setError(null)} />}
+			{successMsg && (
+				<AdminAlert
+					message={successMsg}
+					type="success"
+					onDismiss={() => setSuccessMsg(null)}
+				/>
+			)}
 
-			<AdminTable<Appointment> columns={columns} data={paginatedAppointments} onEdit={openEditModal} onDelete={openDeleteModal} />
+			<SearchBar
+				placeholder="Buscar por telefone ou data..."
+				onSearch={handleSearch}
+			/>
 
-			{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
+			<AdminTable
+				columns={columns}
+				data={appointments}
+				onEdit={openEditModal}
+				onDelete={openDeleteModal}
+				isLoading={isLoading}
+			/>
 
-			{/* Create/Edit Modal */}
-			<AdminModal isOpen={modal.isOpen && (modal.type === "create" || modal.type === "edit")} title={modal.type === "create" ? "Novo Agendamento" : "Editar Agendamento"} onClose={() => setModal({ isOpen: false, type: "create", data: null })} onConfirm={handleSubmit} confirmText={modal.type === "create" ? "Criar" : "Salvar"}>
-				<div className="space-y-4">
-					<FormField label="Médico" name="doctorId" type="select" value={formData.doctorId} onChange={(value) => setFormData({ ...formData, doctorId: Number(value) })} options={mockDoctors.map((d) => ({ label: d.name, value: d.id }))} />
-					<FormField label="Exame" name="examId" type="select" value={formData.examId} onChange={(value) => setFormData({ ...formData, examId: Number(value) })} options={mockExams.map((e) => ({ label: e.name, value: e.id }))} />
-					<FormField label="Data" name="date" type="date" value={formData.date} onChange={(value) => setFormData({ ...formData, date: String(value) })} required />
-					<FormField label="Horário Início" name="startTime" type="time" value={formData.startTime} onChange={(value) => setFormData({ ...formData, startTime: String(value) })} required />
-					<FormField label="Horário Fim" name="endTime" type="time" value={formData.endTime} onChange={(value) => setFormData({ ...formData, endTime: String(value) })} required />
-					<FormField label="Telefone" name="phone" type="text" value={formData.phone} onChange={(value) => setFormData({ ...formData, phone: String(value) })} required placeholder="(11) 98765-4321" />
+			{totalPages > 1 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={setCurrentPage}
+				/>
+			)}
+
+			<AdminModal
+				isOpen={modal.isOpen && (modal.type === "create" || modal.type === "edit")}
+				title={
+					modal.type === "create" ? "Novo Agendamento" : "Editar Agendamento"
+				}
+				onClose={closeModal}
+				onConfirm={handleSubmit}
+				confirmText={modal.type === "create" ? "Criar" : "Salvar"}
+				isLoading={isSubmitting}
+				size="lg"
+			>
+				<div className="space-y-1">
+					<FormField
+						label="Médico"
+						name="doctorId"
+						type="select"
+						value={formData.doctorId}
+						onChange={(v) =>
+							setFormData({ ...formData, doctorId: Number(v) })
+						}
+						error={fieldErrors.doctorId}
+						options={doctorOptions}
+						required
+					/>
+					<FormField
+						label="Exame"
+						name="examId"
+						type="select"
+						value={formData.examId}
+						onChange={(v) => setFormData({ ...formData, examId: Number(v) })}
+						error={fieldErrors.examId}
+						options={examOptions}
+						required
+					/>
+					<FormField
+						label="Data"
+						name="date"
+						type="date"
+						value={formData.date}
+						onChange={(v) => setFormData({ ...formData, date: String(v) })}
+						error={fieldErrors.date}
+						required
+					/>
+					<div className="grid grid-cols-2 gap-3">
+						<FormField
+							label="Horário Início"
+							name="startTime"
+							type="time"
+							value={formData.startTime}
+							onChange={(v) =>
+								setFormData({ ...formData, startTime: String(v) })
+							}
+							error={fieldErrors.startTime}
+							required
+						/>
+						<FormField
+							label="Horário Fim"
+							name="endTime"
+							type="time"
+							value={formData.endTime}
+							onChange={(v) =>
+								setFormData({ ...formData, endTime: String(v) })
+							}
+							error={fieldErrors.endTime}
+							required
+						/>
+					</div>
+					<FormField
+						label="Telefone"
+						name="phone"
+						value={formData.phone}
+						onChange={(v) =>
+							setFormData({ ...formData, phone: maskPhone(String(v)) })
+						}
+						error={fieldErrors.phone}
+						required
+						placeholder="(11) 98765-4321"
+					/>
 				</div>
 			</AdminModal>
 
-			{/* Delete Modal */}
-			<AdminModal isOpen={modal.isOpen && modal.type === "delete"} title="Confirmar Exclusão" onClose={() => setModal({ isOpen: false, type: "create", data: null })} onConfirm={handleDelete} confirmText="Excluir" type="danger">
+			<AdminModal
+				isOpen={modal.isOpen && modal.type === "delete"}
+				title="Confirmar Exclusão"
+				onClose={closeModal}
+				onConfirm={handleDelete}
+				confirmText="Excluir"
+				type="danger"
+				isLoading={isSubmitting}
+			>
 				<p className="text-gray-700">Tem certeza que deseja excluir este agendamento?</p>
-				<p className="text-sm text-gray-500 mt-2">
-					{modal.data && (
-						<>
-							Médico: {mockDoctors.find((d) => d.id === modal.data?.doctorId)?.name}
-							<br />
-							Data: {modal.data.date} às {modal.data.startTime}
-						</>
-					)}
-				</p>
-				<p className="text-sm text-gray-500">Esta ação não pode ser desfeita.</p>
+				{modal.data && (
+					<p className="text-sm text-gray-500 mt-2">
+						{doctorMap.get(modal.data.doctorId)} ·{" "}
+						{formatDate(modal.data.date)} às {modal.data.startTime}
+					</p>
+				)}
 			</AdminModal>
 		</div>
 	);

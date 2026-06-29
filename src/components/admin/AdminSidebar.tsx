@@ -21,38 +21,42 @@ const navLinks: NavLink[] = [
 ];
 
 export default function AdminSidebar() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <>
-      {/* Overlay para mobile */}
-      {isOpen && (
+      {/* Overlay mobile */}
+      {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 md:hidden z-20"
-          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/50 md:hidden z-20"
+          onClick={() => setIsMobileOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static top-0 left-0 h-screen bg-(--main-dark-color) text-white transition-transform duration-300 z-30 md:z-0 ${
-          isOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0 w-20'
-        }`}
+        className={`fixed md:static top-0 left-0 h-screen bg-[var(--main-dark-color)] text-white transition-all duration-300 z-30
+        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        ${isCollapsed ? 'md:w-20' : 'md:w-64'}
+        w-64`}
       >
         <nav className="flex flex-col h-full pt-24 md:pt-8 px-4 md:px-6 gap-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-(--main-color) transition-colors duration-200 text-sm md:text-base"
-              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[var(--main-color)] transition-colors text-sm md:text-base"
+              onClick={() => setIsMobileOpen(false)}
             >
               <span className="text-xl md:text-2xl">{link.icon}</span>
-              <span className={`${isOpen ? 'block' : 'hidden'} md:block`}>
-                {link.label}
-              </span>
-              {link.badge && (
-                <span className={`ml-auto bg-red-500 rounded-full px-2 py-1 text-xs ${isOpen ? 'block' : 'hidden'} md:block`}>
+
+              {!isCollapsed && (
+                <span className="md:block">{link.label}</span>
+              )}
+
+              {link.badge && !isCollapsed && (
+                <span className="ml-auto bg-red-500 rounded-full px-2 py-1 text-xs">
                   {link.badge}
                 </span>
               )}
@@ -61,13 +65,22 @@ export default function AdminSidebar() {
         </nav>
       </aside>
 
-      {/* Toggle button */}
+      {/* Botão mobile */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-8 left-8 md:hidden z-40 bg-(--main-color) text-white p-3 rounded-full shadow-lg"
-        aria-label="Toggle sidebar"
+        onClick={() => setIsMobileOpen(true)}
+        className="fixed bottom-8 left-8 md:hidden z-40 bg-[var(--main-color)] text-white p-3 rounded-full shadow-lg"
+        aria-label="Abrir sidebar"
       >
-        {isOpen ? '✕' : '☰'}
+        ☰
+      </button>
+
+      {/* Botão collapse desktop */}
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="hidden md:flex fixed bottom-8 left-8 z-40 bg-[var(--main-color)] text-white p-3 rounded-full shadow-lg"
+        aria-label="Colapsar sidebar"
+      >
+        {isCollapsed ? '→' : '←'}
       </button>
     </>
   );
