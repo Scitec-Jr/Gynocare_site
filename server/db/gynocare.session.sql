@@ -1,7 +1,0 @@
-CREATE TABLE DoutorHorarioIndisponivel (
-    Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    DoutorId INT UNSIGNED NOT NULL,
-    Data DATE NOT NULL,
-
-    FOREIGN KEY (DoutorId) REFERENCES Doutor(Id)
-);
