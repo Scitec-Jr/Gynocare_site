@@ -7,7 +7,7 @@ export default async function Specialities() {
 
     return (
         <main>
-            <section className="max-w-360 mx-auto py-4">
+            <section className="max-w-480 mx-auto py-4">
                 <h1 className="mb-4 text-4xl text-(--main-color) title px-4 md:px-8">
                     Especialidades
                 </h1>

@@ -8,7 +8,7 @@ import { navigationLinks } from "./Header/navigationLinks";
 export default function Footer() {
 	return (
 		<footer className="bg-(--main-dark-color) text-white pt-8 p-4 md:px-8">
-			<div className="flex flex-col md:flex-row justify-between gap-4 md:gap-8 max-w-360 mx-auto">
+			<div className="flex flex-col md:flex-row justify-between gap-4 md:gap-8 max-w-480 mx-auto">
 				<div className="flex justify-center items-center">
 					<Image src={"/assets/global/logo2.png"} alt="Gynocare" width={300} height={150} className="mb-8" />
 				</div>
@@ -52,7 +52,7 @@ export default function Footer() {
 				</div>
 			</div>
 
-			<div className="max-w-360 mx-auto py-4">
+			<div className="max-w-480 mx-auto py-4">
 				<small>© 2020 - CLÍNICA GYNOCARE - Todos os Direitos Reservados.</small>
 			</div>
 

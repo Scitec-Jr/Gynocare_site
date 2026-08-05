@@ -9,7 +9,7 @@ export default function TreatmentButtons({ procedures, procedure, treatments, tr
 	const [open, setOpen] = useState(false);
 
 	return (
-		<section className="max-w-360 mx-auto mb-8 p-4 md:px-8 relative">
+		<section className="max-w-480 mx-auto mb-8 p-4 md:px-8 relative">
 			<div onClick={() => setOpen((prev) => !prev)} className="flex items-center mb-6 cursor-pointer">
 				<h1 className="me-4 text-(--main-dark-color) text-4xl font-bold">{procedure}</h1>
 

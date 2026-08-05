@@ -6,7 +6,7 @@ import MobileNavigation from "./MobileNavigation";
 export default function Header() {
     return (
         <header className="fixed top-0 md:static w-full z-50">
-            <div className="max-w-360 mx-auto">
+            <div className="max-w-480 mx-auto">
                 <div className="flex items-center gap-4 md:gap-8 p-4 md:px-8 bg-(--main-dark-color)">
                     <a href="https://www.instagram.com/clinicagynocareecografia/" target="_blank" rel="noopener noreferrer">
                         <Image src={"/assets/icons/instagram.png"} alt={"Instagram"} width={24} height={24} />

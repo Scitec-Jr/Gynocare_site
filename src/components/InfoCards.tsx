@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function InfoCards() {
     return (
-        <section className="flex flex-wrap justify-center gap-8 max-w-360 mx-auto mb-8 p-4 md:px-8">
+        <section className="flex flex-wrap justify-center gap-8 max-w-480 mx-auto mb-8 p-4 md:px-8">
             <div className="flex flex-col items-center max-w-80 min-w-40 flex-1">
                 <Image src={"/assets/icons/schedule.png"} alt="Agendar" width={52} height={52} className="mb-4"/>
 

@@ -22,7 +22,7 @@ export default function AdminLayout({
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader title={title} subtitle={subtitle} userName={userName} />
 
-        <main className="flex-1 p-4 md:p-8 max-w-360 w-full mx-auto">
+        <main className="flex-1 p-4 md:p-8 max-w-480 w-full mx-auto">
           {children}
         </main>
 

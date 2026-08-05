@@ -16,7 +16,7 @@ export default function InfoTab({
 
 	return (
 		<section className="bg-(--secondary-color)">
-			<div className="max-w-360 mx-auto">
+			<div className="max-w-480 mx-auto">
 				<div className="flex">
 					<button onClick={() => setActive("info")} className={`flex-1 p-4 transition ${active === "info" ? "bg-transparent" : "bg-(--main-dark-color)"} cursor-pointer`}>
 						<h2 className="text-white text-center text-xl font-bold">INFORMAÇÕES</h2>

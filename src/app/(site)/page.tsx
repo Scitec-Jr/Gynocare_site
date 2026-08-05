@@ -10,7 +10,7 @@ export default async function Home() {
 	const doctorsList = await getDoctorsList();
 	return (
 		<main>
-			<section className="relative h-[calc(100vh-180px)] max-h-120 max-w-360 mx-auto mb-4">
+			<section className="relative h-[calc(100vh-180px)] max-h-120 max-w-480 mx-auto mb-4">
 				<Image src={"/assets/images/clinica/clinica2.jpeg"} alt="Banner" width={1200} height={400} className="w-full h-full" />
 				<div className="absolute inset-0 w-full h-full bg-(--main-dark-color) opacity-50"></div>
 
@@ -19,7 +19,7 @@ export default async function Home() {
 				</Link>
 			</section>
 
-			<section className="max-w-360 mx-auto mb-8 p-4 md:px-8">
+			<section className="max-w-480 mx-auto mb-8 p-4 md:px-8">
 				<h1 className="mb-4 text-2xl text-(--main-dark-color) text-center title">
 					Quem <span className="text-(--main-color)">somos</span>
 				</h1>
@@ -55,7 +55,7 @@ export default async function Home() {
 				</div>
 			</section>
 
-			<section className="max-w-360 mx-auto mb-8 p-4 md:px-8">
+			<section className="max-w-480 mx-auto mb-8 p-4 md:px-8">
 				<h2 className="mb-4 text-2xl text-(--main-dark-color) text-center title">
 					Nossos <span className="text-(--main-color)">Médicos</span>
 				</h2>
@@ -78,7 +78,7 @@ export default async function Home() {
 				</Link>
             </section>
 
-			<section className="relative max-w-360 mx-auto mb-8 py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color)">
+			<section className="relative max-w-480 mx-auto mb-8 py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color)">
 				<h2 className="relative mb-4 text-2xl text-(--main-color) text-center title z-index-10">
 					Nossas <span className="text-white">Especialidades</span>
 				</h2>
@@ -100,7 +100,7 @@ export default async function Home() {
 				</div>
 			</section>
 
-			<section className="max-w-360 mx-auto mb-8 p-4 md:px-8">
+			<section className="max-w-480 mx-auto mb-8 p-4 md:px-8">
 				<h2 className="mb-4 text-2xl text-(--main-dark-color) text-center title">
 					Depoimento de <span className="text-(--main-color)">Pacientes</span>
 				</h2>
@@ -108,7 +108,7 @@ export default async function Home() {
 				<TestimonialFormWrapper />
 			</section>
 
-			<section className="relative max-w-360 mx-auto py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color)">
+			<section className="relative max-w-480 mx-auto py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color)">
 				<h2 className="relative mb-4 text-2xl text-(--main-color) text-center title z-10">
 					Nossos <span className="text-white">Procedimentos</span>
 				</h2>
@@ -120,9 +120,9 @@ export default async function Home() {
 				</Link>
 			</section>
 
-			<hr className="max-w-360 w-4/5 mx-auto mb-8 opacity-5 border" />
+			<hr className="max-w-480 w-4/5 mx-auto mb-8 opacity-5 border" />
 
-			<section className="max-w-360 mx-auto mb-8 p-4 md:px-8">
+			<section className="max-w-480 mx-auto mb-8 p-4 md:px-8">
 				<h2 className="mb-4 text-2xl text-(--main-dark-color) text-center title">
 					Convênios <span className="text-(--main-color)">Aceitos</span>
 				</h2>
