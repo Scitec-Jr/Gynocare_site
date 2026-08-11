@@ -14,8 +14,8 @@ export default function DropdownFAQ({ title, answers }: { title: string; answers
 			</div>
 
 			<div className={`grid transition-all duration-300 ease-in-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
-				<div className="p-4 bg-zinc-100 text-(--main-color) font-bold overflow-hidden">
-                    <ul className="ps-8 list-disc">
+				<div className="bg-zinc-100 text-(--main-color) font-bold overflow-hidden">
+                    <ul className="py-4 ps-8 pe-4 list-disc">
                         {answers.map((answer, index) => (
                             <li key={index}>{answer}</li>
                         ))}

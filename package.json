@@ -14,7 +14,7 @@
     "embla-carousel": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "mysql2": "^3.22.4",
-    "next": "16.1.4",
+    "next": "^16.3.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "zod": "^4.4.3"

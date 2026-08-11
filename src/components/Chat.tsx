@@ -114,7 +114,7 @@ export default function Chat() {
 		}
 
 		if (textoLower.includes("agendamento") || textoLower.includes("agendar") || textoLower.includes("marcar") || textoLower.includes("consulta") || textoLower.includes("quero agendar")) {
-			return `📅 Ótimo! Para agendar uma consulta, acesse nossa página de agendamento!\n\n🔗 Acesse:https://gynocare.com/agendar\n\n📝. Ou clique em **Agendamento** no topo dessa página. Na página você pode:\n1. Selecionar o procedimento\n2. Escolher o exame\n3. Selecionar o médico\n4. Escolher a data e horário\n5. Confirmar com seu telefone\n\n💬 No final, você receberá uma mensagem de confirmação e poderá sincronizar com seu Google Calendar!\n\n📞 Se tiver dúvidas ou preferir conversar conosco, entre em contato:\n**(61) 98276-8838**\n\nEstou aqui para ajudar! Tem mais alguma dúvida?`;
+			return `📅 Ótimo! Para agendar uma consulta, acesse nossa página de agendamento!\n\n🔗 Acesse:https://gynocare.com/agendar\n\n📝. Ou clique em **Agendamento** no topo dessa página. Na página você pode:\n1. Selecionar o procedimento\n2. Escolher o exame\n3. Selecionar o médico\n4. Escolher a data e horário\n5. Confirmar com seu telefone\n\n💬 No final, você receberá uma mensagem de confirmação e poderá sincronizar com seu Google Calendar!\n\n📞 Se tiver dúvidas ou preferir conversar conosco, entre em contato:\n**(61)  99898-1009**\n\nEstou aqui para ajudar! Tem mais alguma dúvida?`;
 		}
 
 		return `Desculpe, não entendi bem sua pergunta. 🤔\n\nPosso ajudá-lo com:\n• 🕒 Horários de atendimento\n• 📋 Procedimentos disponíveis\n• 🔬 Exames\n• 👨‍⚕️ Médicos\n• 📅 Como fazer um agendamento\n\nComo posso ajudá-lo?`;

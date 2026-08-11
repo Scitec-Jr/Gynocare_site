@@ -23,15 +23,15 @@ export default function Footer() {
 					))}
 				</div>
 
-				<div>
+				<div className="pe-20">
 					<div className="flex flex-col mb-2">
 						<h2 className="text-lg font-semibold">Central de Relacionamento</h2>
 
 						<a href="https://wa.me/556133887310" target="_blank" className="underline">
 							(61) 3388-7310
 						</a>
-						<a href="https://wa.me/5561981768838" target="_blank" className="underline">
-							(61) 98176-8838
+						<a href="https://wa.me/5561998981009" target="_blank" className="underline">
+							(61) 99898-1009
 						</a>
 						<a href="mailto:clinicagynocare.df@gmail.com" target="_blank" className="underline">
 							clinicagynocare.df@gmail.com

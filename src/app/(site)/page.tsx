@@ -24,21 +24,21 @@ export default async function Home() {
 					Quem <span className="text-(--main-color)">somos</span>
 				</h1>
 
-				<div className="flex justify-center md:justify-between flex-wrap gap-4 max-w-352 mx-auto mb-4">
-					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/clinica/clinica1.jpeg"} alt="Placeholder" width={400} height={300} className="w-full h-30" />
+				<div className="flex justify-center flex-wrap gap-4 max-w-352 mx-auto mb-4">
+					<div className="max-w-40 md:max-w-60 2xl:max-w-80 w-full">
+						<Image src={"/assets/images/clinica/clinica1.jpeg"} alt="Placeholder" width={400} height={300} className="w-full aspect-4/3" />
 					</div>
 
-					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/clinica/clinica2.jpeg"} alt="Placeholder" width={400} height={300} className="w-full h-30" />
+					<div className="max-w-40 md:max-w-60 2xl:max-w-80 w-full">
+						<Image src={"/assets/images/clinica/clinica2.jpeg"} alt="Placeholder" width={400} height={300} className="w-full aspect-4/3" />
 					</div>
 
-					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/clinica/clinica3.jpeg"} alt="Placeholder" width={400} height={300} className="w-full h-30" />
+					<div className="max-w-40 md:max-w-60 2xl:max-w-80 w-full">
+						<Image src={"/assets/images/clinica/clinica3.jpeg"} alt="Placeholder" width={400} height={300} className="w-full aspect-4/3" />
 					</div>
 
-					<div className="max-w-40 w-full">
-						<Image src={"/assets/images/clinica/clinica4.jpeg"} alt="Placeholder" width={400} height={300} className="w-full h-30" />
+					<div className="max-w-40 md:max-w-60 2xl:max-w-80 w-full">
+						<Image src={"/assets/images/clinica/clinica4.jpeg"} alt="Placeholder" width={400} height={300} className="w-full aspect-4/3" />
 					</div>
 				</div>
 
@@ -47,8 +47,8 @@ export default async function Home() {
 						<p>Na Gynocare, entendemos que cuidar da saúde é um ato de amor-próprio. Nascemos do desejo de criar um espaço onde cada mulher se sinta segura, compreendida e verdadeiramente acolhida. Mais do que realizar exames, nossa missão é oferecer uma jornada de cuidado completa, com precisão, tecnologia de ponta e, acima de tudo, um atendimento humano e gentil. Nossa equipe é formada por especialistas dedicados que acreditam que a confiança é a base de qualquer diagnóstico. Por isso, investimos em um ambiente confortável e em uma comunicação clara e transparente, garantindo que você tenha tranquilidade em cada etapa do seu cuidado. Seu bem-estar é a nossa prioridade. Bem-vinda à Gynocare.</p>
 					</div>
 
-					<div className="relative flex justify-end flex-1 ps-8 pb-8">
-						<Image src={"/assets/images/ecografia.jpeg"} alt="Placeholder" width={400} height={400} />
+					<div className="relative flex justify-end flex-1 max-w-160 ps-8 pb-8">
+						<Image src={"/assets/images/ecografia.jpeg"} alt="Placeholder" width={400} height={400} className="w-full max-w-125 aspect-4/3" />
 
 						<Image src={"/assets/images/ecografia2.jpeg"} alt="Placeholder" width={200} height={200} className="absolute bottom-0 left-0 w-1/2 aspect-square" />
 					</div>
@@ -108,7 +108,7 @@ export default async function Home() {
 				<TestimonialFormWrapper />
 			</section>
 
-			<section className="relative max-w-480 mx-auto py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color)">
+			<section className="relative max-w-480 mx-auto py-16 px-4 md:py-16 md:px-8 bg-(--main-dark-color)">
 				<h2 className="relative mb-4 text-2xl text-(--main-color) text-center title z-10">
 					Nossos <span className="text-white">Procedimentos</span>
 				</h2>

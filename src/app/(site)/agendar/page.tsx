@@ -383,7 +383,7 @@ export default function Agendamento() {
 					<br />
 					Caso você não confirme, não se preocupe! Você ainda será atendido, se chegar com 15 minutos de antecedência, caso não seja possível, seu horário poderá ser oferecido a outro paciente que esteja na lista de espera e, posteriormente, você será encaixado em outro horário disponível. <br />
 					<br />
-					Agradecemos sua compreensão e colaboração. Se tiver alguma dúvida ou precisar confirmar sua consulta/exame, por favor não hesite em entrar em contato conosco pelo telefone (61) 3388-7320 ou (61) 98276-8838.
+					Agradecemos sua compreensão e colaboração. Se tiver alguma dúvida ou precisar confirmar sua consulta/exame, por favor não hesite em entrar em contato conosco pelo telefone (61) 3388-7320 ou (61) 99898-1009.
 				</p>
 			</section>
 		</main>
