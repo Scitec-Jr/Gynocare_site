@@ -57,7 +57,7 @@ export async function getSpecialitiesList(): Promise<Speciality[]> {
 		return procedures.map((procedure) => ({
 			id: procedure.id,
 			name: procedure.name,
-			imageUrl: `/assets/images/especialidades/${procedure.id}`,
+			imageUrl: `/assets/images/especialidades/${procedure.id}.jpg`,
 			url: `/procedimentos/${procedure.slug}`,
 			treatments: exams.filter((exam) => exam.procedureId === procedure.id).map((exam) => exam.name),
 		}));
