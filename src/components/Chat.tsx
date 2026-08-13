@@ -10,19 +10,25 @@ type Mensagem = {
 	timestamp: Date;
 };
 
+type DadosCarregados = {
+	procedimentos: Procedimento[];
+	exames: Exame[];
+	doutores: Doutor[];
+};
+
 interface Procedimento {
-	Id: number;
-	Nome: string;
+	id: number;
+	name: string;
 }
 
 interface Exame {
-	Id: number;
-	Nome: string;
+	id: number;
+	name: string;
 }
 
 interface Doutor {
-	Id: number;
-	Nome: string;
+	id: number;
+	name: string;
 }
 
 export default function Chat() {
@@ -37,31 +43,49 @@ export default function Chat() {
 	]);
 	const [inputMensagem, setInputMensagem] = useState("");
 	const [enviando, setEnviando] = useState(false);
-	const [dadosCarregados, setDadosCarregados] = useState({
-		procedimentos: [] as Procedimento[],
-		exames: [] as Exame[],
-		doutores: [] as Doutor[],
+	const [dadosCarregados, setDadosCarregados] = useState<DadosCarregados>({
+		procedimentos: [],
+		exames: [],
+		doutores: [],
 	});
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const carregadoRef = useRef(false);
 
-	const carregarDados = async () => {
+	const normalizarLista = <T extends { id?: number; name?: string }>(dados: unknown): T[] => {
+		if (!dados) return [];
+
+		const listaRaw = Array.isArray((dados as { data?: unknown }).data)
+			? (dados as { data?: T[] }).data
+			: Array.isArray(dados)
+				? (dados as T[])
+				: [];
+
+		return (listaRaw ?? []).map((item) => ({
+			...item,
+			id: item?.id ?? 0,
+			name: item?.name ?? "",
+		})) as T[];
+	};
+
+	const carregarDados = async (): Promise<DadosCarregados> => {
 		try {
-			const [procResult, exResult, doutResult] = await Promise.all([fetch("/api/procedimentos").then((r) => r.json()), fetch("/api/exames").then((r) => r.json()), fetch("/api/doutores").then((r) => r.json())]);
+			const [procResult, exResult, doutResult] = await Promise.all([
+				fetch("/api/procedimentos").then((r) => r.json()),
+				fetch("/api/exames").then((r) => r.json()),
+				fetch("/api/doutores").then((r) => r.json()),
+			]);
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const doutoresFormatados = (doutResult || []).map((d: any) => ({
-				Id: d.id || d.Id,
-				Nome: d.name || d.Nome,
-			}));
+			const dadosFormatados: DadosCarregados = {
+				procedimentos: normalizarLista<Procedimento>(procResult),
+				exames: normalizarLista<Exame>(exResult),
+				doutores: normalizarLista<Doutor>(doutResult),
+			};
 
-			setDadosCarregados({
-				procedimentos: procResult || [],
-				exames: exResult || [],
-				doutores: doutoresFormatados || [],
-			});
+			setDadosCarregados(dadosFormatados);
+			return dadosFormatados;
 		} catch (error) {
 			console.error("Erro ao carregar dados:", error);
+			return { procedimentos: [], exames: [], doutores: [] };
 		}
 	};
 
@@ -82,7 +106,7 @@ export default function Chat() {
 		scrollParaBaixo();
 	}, [mensagens]);
 
-	const gerarRespostaBot = (mensagemUsuario: string): string => {
+	const gerarRespostaBot = (mensagemUsuario: string, dados: DadosCarregados = dadosCarregados): string => {
 		const textoLower = mensagemUsuario.toLowerCase();
 
 		if (textoLower.includes("horário") || textoLower.includes("horario") || textoLower.includes("funciona") || textoLower.includes("aberto") || textoLower.includes("abre") || textoLower.includes("fecha")) {
@@ -90,24 +114,24 @@ export default function Chat() {
 		}
 
 		if (textoLower.includes("procedimento") || textoLower.includes("procedimentos") || textoLower.includes("serviço") || textoLower.includes("serviços")) {
-			if (dadosCarregados.procedimentos.length > 0) {
-				const listaProcedimentos = dadosCarregados.procedimentos.map((p) => `• ${p.Nome}`).join("\n");
+			if (dados.procedimentos.length > 0) {
+				const listaProcedimentos = dados.procedimentos.map((p) => `• ${p.name}`).join("\n");
 				return `📋 Nossos procedimentos disponíveis são:\n\n${listaProcedimentos}\n\nGostaria de saber mais sobre algum deles ou fazer um agendamento?`;
 			}
 			return "Desculpe, não consegui carregar a lista de procedimentos. Tente novamente mais tarde.";
 		}
 
 		if (textoLower.includes("exame") || textoLower.includes("exames") || textoLower.includes("teste")) {
-			if (dadosCarregados.exames.length > 0) {
-				const listaExames = dadosCarregados.exames.map((e) => `• ${e.Nome}`).join("\n");
+			if (dados.exames.length > 0) {
+				const listaExames = dados.exames.map((e) => `• ${e.name}`).join("\n");
 				return `🔬 Contamos com os seguintes exames:\n\n${listaExames}\n\nDeseja fazer um agendamento?`;
 			}
 			return "Desculpe, não consegui carregar a lista de exames. Tente novamente mais tarde.";
 		}
 
 		if (textoLower.includes("doutor") || textoLower.includes("doutora") || textoLower.includes("médico") || textoLower.includes("medico") || textoLower.includes("especialista")) {
-			if (dadosCarregados.doutores.length > 0) {
-				const listaDoutores = dadosCarregados.doutores.map((d) => `• ${d.Nome}`).join("\n");
+			if (dados.doutores.length > 0) {
+				const listaDoutores = dados.doutores.map((d) => `• ${d.name}`).join("\n");
 				return `👨‍⚕️ Nossos médicos disponíveis são:\n\n${listaDoutores}\n\nGostaria de fazer um agendamento com algum deles?`;
 			}
 			return "Desculpe, não consegui carregar a lista de médicos. Tente novamente mais tarde.";
@@ -123,9 +147,10 @@ export default function Chat() {
 	const enviarMensagem = async () => {
 		if (!inputMensagem.trim()) return;
 
+		const mensagemUsuarioAtual = inputMensagem;
 		const novaMensagemUsuario: Mensagem = {
 			id: Date.now(),
-			texto: inputMensagem,
+			texto: mensagemUsuarioAtual,
 			remetente: "usuario",
 			timestamp: new Date(),
 		};
@@ -134,19 +159,18 @@ export default function Chat() {
 		setInputMensagem("");
 		setEnviando(true);
 
-		setTimeout(() => {
-			const respostaBot = gerarRespostaBot(inputMensagem);
+		const dadosAtualizados = await carregarDados();
+		const respostaBot = gerarRespostaBot(mensagemUsuarioAtual, dadosAtualizados);
 
-			const novaMensagemBot: Mensagem = {
-				id: Date.now() + 1,
-				texto: respostaBot,
-				remetente: "bot",
-				timestamp: new Date(),
-			};
+		const novaMensagemBot: Mensagem = {
+			id: Date.now() + 1,
+			texto: respostaBot,
+			remetente: "bot",
+			timestamp: new Date(),
+		};
 
-			setMensagens((prev) => [...prev, novaMensagemBot]);
-			setEnviando(false);
-		}, 800);
+		setMensagens((prev) => [...prev, novaMensagemBot]);
+		setEnviando(false);
 	};
 
 	return (
