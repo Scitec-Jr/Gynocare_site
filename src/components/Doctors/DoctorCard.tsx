@@ -14,7 +14,7 @@ export default function DoctorCard({ name, exams }: { name: string; exams: { id:
                             {exams.map((exam) => <li key={exam.id}>{exam.name}</li>)}
                         </ul>
                     ) : (
-                        <p>Nenhum exame cadastrado</p>
+                        <p>Entre em contato para mais informações</p>
                     )}
                 </div>
             </div>

@@ -13,6 +13,7 @@ interface NavLink {
 const navLinks: NavLink[] = [
   { label: 'Dashboard', href: '/adm', icon: '📊' },
   { label: 'Médicos', href: '/adm/medicos', icon: '👨‍⚕️' },
+  { label: 'Indisponibilidades', href: '/adm/indisponibilidades', icon: '🚫' },
   { label: 'Exames', href: '/adm/exames', icon: '🔬' },
   { label: 'Procedimentos', href: '/adm/procedimentos', icon: '⚕️' },
   { label: 'Agendamentos', href: '/adm/agendamentos', icon: '📅' },
@@ -36,7 +37,7 @@ export default function AdminSidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static top-0 left-0 h-screen bg-[var(--main-dark-color)] text-white transition-all duration-300 z-30
+        className={`fixed md:static top-0 left-0 h-screen bg-(--main-dark-color) text-white transition-all duration-300 z-30
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         ${isCollapsed ? 'md:w-20' : 'md:w-64'}
         w-64`}
@@ -46,7 +47,7 @@ export default function AdminSidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[var(--main-color)] transition-colors text-sm md:text-base"
+              className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-(--main-color) transition-colors text-sm md:text-base"
               onClick={() => setIsMobileOpen(false)}
             >
               <span className="text-xl md:text-2xl">{link.icon}</span>
@@ -68,7 +69,7 @@ export default function AdminSidebar() {
       {/* Botão mobile */}
       <button
         onClick={() => setIsMobileOpen(true)}
-        className="fixed bottom-8 left-8 md:hidden z-40 bg-[var(--main-color)] text-white p-3 rounded-full shadow-lg"
+        className="fixed bottom-8 left-8 md:hidden z-40 bg-(--main-color) text-white p-3 rounded-full shadow-lg"
         aria-label="Abrir sidebar"
       >
         ☰
@@ -77,7 +78,7 @@ export default function AdminSidebar() {
       {/* Botão collapse desktop */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="hidden md:flex fixed bottom-8 left-8 z-40 bg-[var(--main-color)] text-white p-3 rounded-full shadow-lg"
+        className="hidden md:flex fixed bottom-8 left-8 z-40 bg-(--main-color) text-white p-3 rounded-full shadow-lg"
         aria-label="Colapsar sidebar"
       >
         {isCollapsed ? '→' : '←'}

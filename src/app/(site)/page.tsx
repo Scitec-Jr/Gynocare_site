@@ -70,7 +70,7 @@ export default async function Home() {
 									<p className="font-normal">
 										{doctor.exams.length > 0
 											? doctor.exams.slice(0, 4).map((exam) => exam.name).join(", ")
-											: "Nenhum exame cadastrado"}
+											: "Entre em contato para mais informações"}
 									</p>
 								</div>
 							</div>
