@@ -61,26 +61,27 @@ export default async function Home() {
 				</h2>
 
 				<Carousel>
-				{doctorsList.map((doctor) => (
-					<div key={doctor.id} className="min-w-full md:min-w-auto items-center gap-4 md:flex-[0_0_100%] lg:flex-[0_0_50%] px-4">
-						<div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-(--main-dark-color) rounded-xl">
-							<div className="text-white font-bold">
-								<h3 className="mb-4">{doctor.name}</h3>
-								<p className="font-normal">
-									{doctor.exams.length > 0
-										? doctor.exams.map((exam) => exam.name).join(", ")
-										: "Nenhum exame cadastrado"}
-								</p>
+					{doctorsList.map((doctor) => (
+						<div key={doctor.id} className="min-w-full md:min-w-auto items-center gap-4 md:flex-[0_0_100%] lg:flex-[0_0_50%] px-4">
+							<div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-(--main-dark-color) rounded-xl">
+								<div className="text-white font-bold">
+									<h3 className="mb-4">{doctor.name}</h3>
+									<h4 className="mb-2 text-sm uppercase">Exames realizados</h4>
+									<p className="font-normal">
+										{doctor.exams.length > 0
+											? doctor.exams.slice(0, 4).map((exam) => exam.name).join(", ")
+											: "Nenhum exame cadastrado"}
+									</p>
+								</div>
 							</div>
 						</div>
-					</div>
-				))}
-                </Carousel>
+					))}
+				</Carousel>
 
-                <Link href={"/nossos-medicos"} className="block w-fit mx-auto py-2 px-4 md:py-4 bg-(--main-color) md:text-xl text-white title rounded-full md:rounded-xl">
+				<Link href={"/nossos-medicos"} className="block w-fit mx-auto py-2 px-4 md:py-4 bg-(--main-color) md:text-xl text-white title rounded-full md:rounded-xl">
 					Saiba mais
 				</Link>
-            </section>
+			</section>
 
 			<section className="relative max-w-480 mx-auto mb-8 py-16 px-4 md:py-8 md:px-8 bg-(--main-dark-color)">
 				<h2 className="relative mb-4 text-2xl text-(--main-color) text-center title z-index-10">
