@@ -11,7 +11,7 @@ export default async function OurDoctors() {
                 <h1 className="mb-4 text-4xl text-(--main-dark-color) title">Nossos <span className="text-(--main-color)">Médicos</span></h1>
 
                 {doctorsList.map((doctor, index) => (
-                    <DoctorCard key={doctor.id || index} name={doctor.name} graduation={doctor.graduation} image={doctor.image} description={doctor.description} />
+                    <DoctorCard key={doctor.id || index} name={doctor.name} exams={doctor.exams} />
                 ))}
             </section>
 

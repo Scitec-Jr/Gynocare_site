@@ -66,7 +66,11 @@ export default async function Home() {
 						<div className="flex flex-col sm:flex-row items-center gap-4 p-4 bg-(--main-dark-color) rounded-xl">
 							<div className="text-white font-bold">
 								<h3 className="mb-4">{doctor.name}</h3>
-								<h3>{doctor.graduation || "Especialista"}</h3>
+								<p className="font-normal">
+									{doctor.exams.length > 0
+										? doctor.exams.map((exam) => exam.name).join(", ")
+										: "Nenhum exame cadastrado"}
+								</p>
 							</div>
 						</div>
 					</div>

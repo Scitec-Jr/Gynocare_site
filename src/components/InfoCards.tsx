@@ -8,8 +8,8 @@ export default function InfoCards() {
 
                 <h2 className="mb-4 text-(--main-color) text-center"><span className="text-(--main-dark-color)">MARQUE</span> SUA CONSULTA</h2>
 
-                <a href="https://wa.me/5561981768838" target="_blank" className="text-(--main-color) font-semibold">Clique aqui</a>
-                <p className="text-zinc-500 text-center">para marcar sua consulta pelo Whatsapp - (61) 98176-8838</p>
+                <a href="https://wa.me/5561998981009" target="_blank" className="text-(--main-color) font-semibold">Clique aqui</a>
+                <p className="text-zinc-500 text-center">para marcar sua consulta pelo Whatsapp - (61) 99898-1009</p>
             </div>
 
             <div className="flex flex-col items-center max-w-80 min-w-40 flex-1">

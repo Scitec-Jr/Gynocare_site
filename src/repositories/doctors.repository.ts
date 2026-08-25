@@ -5,6 +5,8 @@ export interface DoctorRow {
   Nome: string;
   Criado_em: string;
   Atualizado_em: string;
+  Exame_Id: number | null;
+  Exame_Nome: string | null;
 }
 
 export const doctorsRepository = {
@@ -17,28 +19,35 @@ export const doctorsRepository = {
     const searchTerm = `%${search}%`;
 
     let sql = `
-      SELECT DISTINCT D.*
-      FROM Doutor D
-      WHERE D.Nome LIKE ?
+      SELECT D.*, E.Id AS Exame_Id, E.Nome AS Exame_Nome
+      FROM (
+        SELECT D.*
+        FROM Doutor D
+        WHERE D.Nome LIKE ?
     `;
 
     const params: (string | number)[] = [searchTerm];
 
     if (examId) {
       sql = `
-        SELECT DISTINCT D.*
-        FROM Doutor D
-        INNER JOIN Doutor_Exame DE ON D.Id = DE.Doutor_Id
-        WHERE D.Nome LIKE ?
-        AND DE.Exame_Id = ?
+        SELECT D.*, E.Id AS Exame_Id, E.Nome AS Exame_Nome
+        FROM (
+          SELECT DISTINCT D.*
+          FROM Doutor D
+          INNER JOIN Doutor_Exame DE ON D.Id = DE.Doutor_Id
+          WHERE D.Nome LIKE ?
+          AND DE.Exame_Id = ?
       `;
 
       params.push(examId);
     }
 
     sql += `
-      ORDER BY D.Nome ASC
       LIMIT ? OFFSET ?
+      ) D
+      LEFT JOIN Doutor_Exame DE ON D.Id = DE.Doutor_Id
+      LEFT JOIN Exame E ON DE.Exame_Id = E.Id
+      ORDER BY D.Nome ASC, E.Nome ASC
     `;
 
     params.push(limit, offset);

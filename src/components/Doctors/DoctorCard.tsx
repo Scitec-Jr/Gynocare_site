@@ -1,17 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function DoctorCard({name, graduation, image, description}: {name: string; graduation: string; image: string; description: string}) {
+export default function DoctorCard({ name, exams }: { name: string; exams: { id: number; name: string }[] }) {
     return (
         <div className="mb-12">
             <h2 className="mb-4 text-2xl text-(--main-dark-color) title"><span className="text-(--main-color)">{name}</span></h2>
 
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mx-4 md:mx-8 mb-4">
                 <div className="flex-1">
-                    <h3 className="font-semibold">Sobre o doutor</h3>
-                    <p className="zinc-500">{graduation}</p>
-
-                    <p>{description}</p>
+                    <h3 className="font-semibold">Exames realizados</h3>
+                    {exams.length > 0 ? (
+                        <ul className="list-disc ps-5">
+                            {exams.map((exam) => <li key={exam.id}>{exam.name}</li>)}
+                        </ul>
+                    ) : (
+                        <p>Nenhum exame cadastrado</p>
+                    )}
                 </div>
             </div>
 

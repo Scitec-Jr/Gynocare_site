@@ -1,9 +1,10 @@
 export type DoctorsList = {
     id?: number;
     name: string;
-    graduation: string;
-    image: string;
-    description: string;
+    exams: {
+        id: number;
+        name: string;
+    }[];
 };
 
 export async function getDoctorsList(): Promise<DoctorsList[]> {

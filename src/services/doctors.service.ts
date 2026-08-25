@@ -20,13 +20,27 @@ export class DoctorsService {
     );
 
     return {
-      data: doctors.map(doc => ({
-        id: doc.Id,
-        name: doc.Nome,
-        graduation: '', // Será implementado quando adicionar campo
-        createdAt: doc.Criado_em,
-        updatedAt: doc.Atualizado_em,
-      })),
+      data: Object.values(doctors.reduce<Record<number, {
+        id: number;
+        name: string;
+        exams: { id: number; name: string }[];
+        createdAt: string;
+        updatedAt: string;
+      }>>((groupedDoctors, doc) => {
+        const doctor = groupedDoctors[doc.Id] ??= {
+          id: doc.Id,
+          name: doc.Nome,
+          exams: [],
+          createdAt: doc.Criado_em,
+          updatedAt: doc.Atualizado_em,
+        };
+
+        if (doc.Exame_Id !== null && doc.Exame_Nome !== null) {
+          doctor.exams.push({ id: doc.Exame_Id, name: doc.Exame_Nome });
+        }
+
+        return groupedDoctors;
+      }, {})),
       total,
       page: Math.floor(offset / limit) + 1,
       pageSize: limit,
