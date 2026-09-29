@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import Image from "next/image";
 
 type Mensagem = {
@@ -9,27 +9,6 @@ type Mensagem = {
 	remetente: "usuario" | "bot";
 	timestamp: Date;
 };
-
-type DadosCarregados = {
-	procedimentos: Procedimento[];
-	exames: Exame[];
-	doutores: Doutor[];
-};
-
-interface Procedimento {
-	id: number;
-	name: string;
-}
-
-interface Exame {
-	id: number;
-	name: string;
-}
-
-interface Doutor {
-	id: number;
-	name: string;
-}
 
 export default function Chat() {
 	const [aberto, setAberto] = useState(false);
@@ -43,60 +22,7 @@ export default function Chat() {
 	]);
 	const [inputMensagem, setInputMensagem] = useState("");
 	const [enviando, setEnviando] = useState(false);
-	const [dadosCarregados, setDadosCarregados] = useState<DadosCarregados>({
-		procedimentos: [],
-		exames: [],
-		doutores: [],
-	});
 	const messagesEndRef = useRef<HTMLDivElement>(null);
-	const carregadoRef = useRef(false);
-
-	const normalizarLista = <T extends { id?: number; name?: string }>(dados: unknown): T[] => {
-		if (!dados) return [];
-
-		const listaRaw = Array.isArray((dados as { data?: unknown }).data)
-			? (dados as { data?: T[] }).data
-			: Array.isArray(dados)
-				? (dados as T[])
-				: [];
-
-		return (listaRaw ?? []).map((item) => ({
-			...item,
-			id: item?.id ?? 0,
-			name: item?.name ?? "",
-		})) as T[];
-	};
-
-	const carregarDados = async (): Promise<DadosCarregados> => {
-		try {
-			const [procResult, exResult, doutResult] = await Promise.all([
-				fetch("/api/procedimentos").then((r) => r.json()),
-				fetch("/api/exames").then((r) => r.json()),
-				fetch("/api/doutores").then((r) => r.json()),
-			]);
-
-			const dadosFormatados: DadosCarregados = {
-				procedimentos: normalizarLista<Procedimento>(procResult),
-				exames: normalizarLista<Exame>(exResult),
-				doutores: normalizarLista<Doutor>(doutResult),
-			};
-
-			setDadosCarregados(dadosFormatados);
-			return dadosFormatados;
-		} catch (error) {
-			console.error("Erro ao carregar dados:", error);
-			return { procedimentos: [], exames: [], doutores: [] };
-		}
-	};
-
-	useEffect(() => {
-		if (aberto && !carregadoRef.current) {
-			carregadoRef.current = true;
-			(async () => {
-				await carregarDados();
-			})();
-		}
-	}, [aberto]);
 
 	const scrollParaBaixo = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -105,44 +31,6 @@ export default function Chat() {
 	useLayoutEffect(() => {
 		scrollParaBaixo();
 	}, [mensagens]);
-
-	const gerarRespostaBot = (mensagemUsuario: string, dados: DadosCarregados = dadosCarregados): string => {
-		const textoLower = mensagemUsuario.toLowerCase();
-
-		if (textoLower.includes("horário") || textoLower.includes("horario") || textoLower.includes("funciona") || textoLower.includes("aberto") || textoLower.includes("abre") || textoLower.includes("fecha")) {
-			return "⏰ Nossos horários de atendimento são de segunda a sexta, das 08:00 às 17:00. Como posso ajudá-lo mais?";
-		}
-
-		if (textoLower.includes("procedimento") || textoLower.includes("procedimentos") || textoLower.includes("serviço") || textoLower.includes("serviços")) {
-			if (dados.procedimentos.length > 0) {
-				const listaProcedimentos = dados.procedimentos.map((p) => `• ${p.name}`).join("\n");
-				return `📋 Nossos procedimentos disponíveis são:\n\n${listaProcedimentos}\n\nGostaria de saber mais sobre algum deles ou fazer um agendamento?`;
-			}
-			return "Desculpe, não consegui carregar a lista de procedimentos. Tente novamente mais tarde.";
-		}
-
-		if (textoLower.includes("exame") || textoLower.includes("exames") || textoLower.includes("teste")) {
-			if (dados.exames.length > 0) {
-				const listaExames = dados.exames.map((e) => `• ${e.name}`).join("\n");
-				return `🔬 Contamos com os seguintes exames:\n\n${listaExames}\n\nDeseja fazer um agendamento?`;
-			}
-			return "Desculpe, não consegui carregar a lista de exames. Tente novamente mais tarde.";
-		}
-
-		if (textoLower.includes("doutor") || textoLower.includes("doutora") || textoLower.includes("médico") || textoLower.includes("medico") || textoLower.includes("especialista")) {
-			if (dados.doutores.length > 0) {
-				const listaDoutores = dados.doutores.map((d) => `• ${d.name}`).join("\n");
-				return `👨‍⚕️ Nossos médicos disponíveis são:\n\n${listaDoutores}\n\nGostaria de fazer um agendamento com algum deles?`;
-			}
-			return "Desculpe, não consegui carregar a lista de médicos. Tente novamente mais tarde.";
-		}
-
-		if (textoLower.includes("agendamento") || textoLower.includes("agendar") || textoLower.includes("marcar") || textoLower.includes("consulta") || textoLower.includes("quero agendar")) {
-			return `📅 Ótimo! Para agendar uma consulta, acesse nossa página de agendamento!\n\n🔗 Acesse:https://gynocare.com/agendar\n\n📝. Ou clique em **Agendamento** no topo dessa página. Na página você pode:\n1. Selecionar o procedimento\n2. Escolher o exame\n3. Selecionar o médico\n4. Escolher a data e horário\n5. Confirmar com seu telefone\n\n💬 No final, você receberá uma mensagem de confirmação e poderá sincronizar com seu Google Calendar!\n\n📞 Se tiver dúvidas ou preferir conversar conosco, entre em contato:\n**(61)  99898-1009**\n\nEstou aqui para ajudar! Tem mais alguma dúvida?`;
-		}
-
-		return `Desculpe, não entendi bem sua pergunta. 🤔\n\nPosso ajudá-lo com:\n• 🕒 Horários de atendimento\n• 📋 Procedimentos disponíveis\n• 🔬 Exames\n• 👨‍⚕️ Médicos\n• 📅 Como fazer um agendamento\n\nComo posso ajudá-lo?`;
-	};
 
 	const enviarMensagem = async () => {
 		if (!inputMensagem.trim()) return;
@@ -159,18 +47,35 @@ export default function Chat() {
 		setInputMensagem("");
 		setEnviando(true);
 
-		const dadosAtualizados = await carregarDados();
-		const respostaBot = gerarRespostaBot(mensagemUsuarioAtual, dadosAtualizados);
+		try {
+			const response = await fetch("/api/chat", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ message: mensagemUsuarioAtual }),
+			});
+			const resultado = await response.json();
 
-		const novaMensagemBot: Mensagem = {
-			id: Date.now() + 1,
-			texto: respostaBot,
-			remetente: "bot",
-			timestamp: new Date(),
-		};
+			if (!response.ok || typeof resultado.response !== "string") {
+				throw new Error("Não foi possível obter uma resposta do chat.");
+			}
 
-		setMensagens((prev) => [...prev, novaMensagemBot]);
-		setEnviando(false);
+			setMensagens((prev) => [...prev, {
+				id: Date.now() + 1,
+				texto: resultado.response,
+				remetente: "bot",
+				timestamp: new Date(),
+			}]);
+		} catch (error) {
+			console.error("Erro ao enviar mensagem:", error);
+			setMensagens((prev) => [...prev, {
+				id: Date.now() + 1,
+				texto: "Desculpe, não consegui responder agora. Tente novamente em instantes.",
+				remetente: "bot",
+				timestamp: new Date(),
+			}]);
+		} finally {
+			setEnviando(false);
+		}
 	};
 
 	return (
