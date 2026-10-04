@@ -3,7 +3,6 @@ import { appointmentsService } from '@/services/appointments.service';
 import { appointmentSchema } from '@/lib/validations/appointments';
 import { requireRoles } from '@/lib/auth/authorization';
 import { getSession } from '@/lib/auth/session';
-import { getSession } from '@/lib/auth/session';
 
 export async function GET(request: NextRequest) {
   try {
