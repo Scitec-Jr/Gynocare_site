@@ -37,7 +37,7 @@ export default function AdminSidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static top-0 left-0 h-screen bg-(--main-dark-color) text-white transition-all duration-300 z-30
+        className={`fixed md:static top-0 left-0 h-screen md:h-auto md:min-h-screen bg-(--main-dark-color) text-white transition-all duration-300 z-30
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         ${isCollapsed ? 'md:w-20' : 'md:w-64'}
         w-64`}
