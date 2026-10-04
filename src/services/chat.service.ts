@@ -7,7 +7,7 @@ const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/
 
 const RESPOSTA_DADOS_INDISPONIVEIS = "Desculpe, não consegui consultar essa informação agora. Tente novamente em instantes.";
 const RESPOSTA_DUVIDA_CLINICA = "Este chat ajuda apenas com informações administrativas. Não consigo avaliar sintomas ou resultados de exames. Para orientação clínica, fale com a equipe da clínica.";
-const RESPOSTA_AGENDAMENTO = "Para agendar, acesse https://gynocare.com/agendar e siga as etapas da página. Não envie telefone ou informações de saúde por este chat.";
+const RESPOSTA_AGENDAMENTO = "Para agendar, acesse https://gynocareecografia.com.br/agendar e siga as etapas da página. Não envie telefone ou informações de saúde por este chat.";
 const RESPOSTA_SEM_GEMINI = "No momento, posso ajudar com a lista de exames, procedimentos, médicos e orientações para agendamento. Para outras dúvidas administrativas, entre em contato com a clínica.";
 
 const INSTRUCOES_SISTEMA = `Você é o assistente administrativo da clínica Gynocare. Responda em português brasileiro, com cordialidade e concisão.
@@ -21,7 +21,7 @@ Dados institucionais confirmados:
 - Telefones: (61) 3388-7310 e (61) 99898-1009.
 - E-mail: clinicagynocare.df@gmail.com.
 - Endereço: Avenida Independência, Quadra 2, Bloco G, Planaltina/DF, CEP 73310-317.
-- Agendamento: https://gynocare.com/agendar.`;
+- Agendamento: https://gynocareecografia.com.br/agendar.`;
 
 function normalizarTexto(texto: string): string {
 	return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
