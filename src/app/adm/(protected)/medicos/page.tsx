@@ -10,22 +10,8 @@ import Pagination from "@/components/admin/Pagination";
 import { FormField } from "@/components/admin/AdminForm";
 import { useAdminList } from "@/hooks/useAdminList";
 import { apiFetch, ApiRequestError } from "@/lib/admin/api";
-import { Doctor } from "@/lib/admin/types";
+import { Doctor, Exam } from "@/lib/admin/types";
 import { formatDate } from "@/lib/admin/utils";
-
-const columns: TableColumn<Doctor>[] = [
-	{ key: "name", label: "Nome" },
-	{
-		key: "createdAt",
-		label: "Criado em",
-		render: (value) => formatDate(value),
-	},
-	{
-		key: "updatedAt",
-		label: "Atualizado em",
-		render: (value) => formatDate(value),
-	},
-];
 
 export default function DoctorsPage() {
 	const {
@@ -51,6 +37,13 @@ export default function DoctorsPage() {
 	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
+	const [examModalDoctor, setExamModalDoctor] = useState<Doctor | null>(null);
+	const [availableExams, setAvailableExams] = useState<Exam[]>([]);
+	const [selectedExamIds, setSelectedExamIds] = useState<number[]>([]);
+	const [examSearch, setExamSearch] = useState("");
+	const [isLoadingExams, setIsLoadingExams] = useState(false);
+	const [isSavingExams, setIsSavingExams] = useState(false);
+	const [examError, setExamError] = useState<string | null>(null);
 
 	const closeModal = () => {
 		setModal({ isOpen: false, type: "create", data: null });
@@ -74,6 +67,52 @@ export default function DoctorsPage() {
 
 	const openDeleteModal = (doctor: Doctor) => {
 		setModal({ isOpen: true, type: "delete", data: doctor });
+	};
+
+	const closeExamModal = () => {
+		setExamModalDoctor(null);
+		setExamError(null);
+		setExamSearch("");
+	};
+
+	const openExamModal = async (doctor: Doctor) => {
+		setExamModalDoctor(doctor);
+		setSelectedExamIds([]);
+		setExamError(null);
+		setExamSearch("");
+		setIsLoadingExams(true);
+
+		try {
+			const [exams, doctorExams] = await Promise.all([
+				fetchAll<Exam>("/api/exames"),
+				apiFetch<{ examIds: number[] }>(`/api/doutores/${doctor.id}/exames`),
+			]);
+			setAvailableExams(exams);
+			setSelectedExamIds(doctorExams.examIds);
+		} catch (err) {
+			setExamError(err instanceof Error ? err.message : "Não foi possível carregar os exames.");
+		} finally {
+			setIsLoadingExams(false);
+		}
+	};
+
+	const handleSaveExams = async () => {
+		if (!examModalDoctor) return;
+
+		setIsSavingExams(true);
+		setExamError(null);
+		try {
+			await apiFetch(`/api/doutores/${examModalDoctor.id}/exames`, {
+				method: "PUT",
+				body: JSON.stringify({ examIds: selectedExamIds }),
+			});
+			setSuccessMsg(`Exames de ${examModalDoctor.name} atualizados com sucesso!`);
+			closeExamModal();
+		} catch (err) {
+			setExamError(err instanceof ApiRequestError ? err.message : "Não foi possível atualizar os exames.");
+		} finally {
+			setIsSavingExams(false);
+		}
 	};
 
 	const handleSubmit = async () => {
@@ -121,6 +160,37 @@ export default function DoctorsPage() {
 			setIsSubmitting(false);
 		}
 	};
+
+	const columns: TableColumn<Doctor>[] = [
+		{ key: "name", label: "Nome" },
+		{
+			key: "id",
+			label: "Exames",
+			width: "w-40",
+			render: (_, doctor) => (
+				<button
+					type="button"
+					onClick={() => openExamModal(doctor)}
+					className="px-3 py-1.5 text-xs font-medium text-teal-800 bg-teal-50 rounded-md hover:bg-teal-100 transition-colors"
+				>
+					Editar exames
+				</button>
+			),
+		},
+		{
+			key: "createdAt",
+			label: "Criado em",
+			render: (value) => formatDate(value),
+		},
+		{
+			key: "updatedAt",
+			label: "Atualizado em",
+			render: (value) => formatDate(value),
+		},
+	];
+	const filteredExams = availableExams.filter((exam) =>
+		exam.name.toLowerCase().includes(examSearch.trim().toLowerCase()),
+	);
 
 	return (
 		<div>
@@ -202,6 +272,59 @@ export default function DoctorsPage() {
 					Tem certeza que deseja excluir <strong>{modal.data?.name}</strong>?
 				</p>
 				<p className="text-sm text-gray-500 mt-2">Esta ação não pode ser desfeita.</p>
+			</AdminModal>
+
+			<AdminModal
+				isOpen={examModalDoctor !== null}
+				title={`Exames de ${examModalDoctor?.name ?? "médico"}`}
+				onClose={closeExamModal}
+				onConfirm={examError ? undefined : handleSaveExams}
+				confirmText="Salvar exames"
+				size="lg"
+				isLoading={isSavingExams || isLoadingExams}
+			>
+				<div className="space-y-4">
+					{examError && <AdminAlert message={examError} onDismiss={() => setExamError(null)} />}
+					<p className="text-sm text-gray-600">Selecione os exames que este médico realiza.</p>
+					<input
+						type="search"
+						value={examSearch}
+						onChange={(event) => setExamSearch(event.target.value)}
+						placeholder="Buscar exame..."
+						aria-label="Buscar exames"
+						className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-(--main-color) focus:outline-none focus:ring-2 focus:ring-(--main-color)/20"
+					/>
+					<p className="text-xs text-gray-500">
+						{selectedExamIds.length} exame{selectedExamIds.length === 1 ? "" : "s"} selecionado{selectedExamIds.length === 1 ? "" : "s"}
+					</p>
+
+					{isLoadingExams ? (
+						<p className="py-8 text-center text-sm text-gray-500">Carregando exames...</p>
+					) : availableExams.length === 0 ? (
+						<p className="py-8 text-center text-sm text-gray-500">Nenhum exame cadastrado.</p>
+					) : (
+						<div className="max-h-[50vh] divide-y divide-gray-100 overflow-y-auto border-y border-gray-200">
+							{filteredExams.map((exam) => (
+								<label key={exam.id} className="flex cursor-pointer items-center gap-3 px-2 py-3 hover:bg-gray-50">
+									<input
+										type="checkbox"
+										checked={selectedExamIds.includes(exam.id)}
+										onChange={(event) => {
+											setSelectedExamIds((currentIds) => event.target.checked
+												? [...currentIds, exam.id]
+												: currentIds.filter((examId) => examId !== exam.id));
+										}}
+										className="h-4 w-4 accent-teal-700"
+									/>
+									<span className="text-sm text-gray-800">{exam.name}</span>
+								</label>
+							))}
+							{filteredExams.length === 0 && (
+								<p className="py-8 text-center text-sm text-gray-500">Nenhum exame corresponde à busca.</p>
+							)}
+						</div>
+					)}
+				</div>
 			</AdminModal>
 		</div>
 	);

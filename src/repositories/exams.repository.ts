@@ -73,6 +73,17 @@ export const examsRepository = {
     );
   },
 
+  async findExistingIds(ids: number[]): Promise<number[]> {
+    if (ids.length === 0) return [];
+
+    const placeholders = ids.map(() => '?').join(', ');
+    const rows = await query<{ Id: number }>(
+      `SELECT Id FROM Exame WHERE Id IN (${placeholders})`,
+      ids,
+    );
+    return rows.map((row) => row.Id);
+  },
+
   async findBySlug(slug: string): Promise<ExamRow | null> {
     return queryOne<ExamRow>(
       'SELECT * FROM Exame WHERE Slug = ?',
