@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth/session';
+import { requireRoles } from '@/lib/auth/authorization';
 import { unavailableDateSchema } from '@/lib/validations/unavailable-dates';
 import { unavailableDatesService } from '@/services/unavailable-dates.service';
 
@@ -8,8 +8,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getSession();
-    if (!session) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
+    const accessResponse = await requireRoles(['admin', 'secretary']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const validation = unavailableDateSchema.safeParse(await request.json());
@@ -39,8 +39,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getSession();
-    if (!session) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
+    const accessResponse = await requireRoles(['admin', 'secretary']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const result = await unavailableDatesService.delete(parseInt(id));

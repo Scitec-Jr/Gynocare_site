@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth/session';
+import { requireRoles } from '@/lib/auth/authorization';
 import { unavailableDateSchema } from '@/lib/validations/unavailable-dates';
 import { unavailableDatesService } from '@/services/unavailable-dates.service';
 
 export async function GET(request: NextRequest) {
   try {
+    const accessResponse = await requireRoles(['admin', 'secretary']);
+    if (accessResponse) return accessResponse;
+
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -20,8 +23,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
+    const accessResponse = await requireRoles(['admin', 'secretary']);
+    if (accessResponse) return accessResponse;
 
     const validation = unavailableDateSchema.safeParse(await request.json());
     if (!validation.success) {

@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { reviewsService } from '@/services/reviews.service';
-import { reviewSchema } from '@/lib/validations/reviews';
-import { getSession } from '@/lib/auth/session';
+import { reviewApprovalSchema, reviewSchema } from '@/lib/validations/reviews';
+import { requireRoles } from '@/lib/auth/authorization';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const accessResponse = await requireRoles(['admin', 'secretary']);
+    if (accessResponse) return accessResponse;
+
     const { id } = await params;
     const review = await reviewsService.getReviewById(parseInt(id));
 
@@ -26,14 +29,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autenticado' },
-        { status: 401 }
-      );
-    }
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const reviewId = parseInt(id);
@@ -74,14 +71,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autenticado' },
-        { status: 401 }
-      );
-    }
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const reviewId = parseInt(id);
@@ -96,5 +87,31 @@ export async function DELETE(
       { error: message },
       { status: 500 }
     );
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const accessResponse = await requireRoles(['admin', 'secretary']);
+  if (accessResponse) return accessResponse;
+
+  const validation = reviewApprovalSchema.safeParse(await request.json().catch(() => null));
+  if (!validation.success) {
+    return NextResponse.json(
+      { error: 'A Secretária só pode aprovar uma avaliação.' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const { id } = await params;
+    const result = await reviewsService.approveReview(parseInt(id));
+    return NextResponse.json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erro ao aprovar avaliação';
+    const status = message === 'Avaliação não encontrada' ? 404 : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }

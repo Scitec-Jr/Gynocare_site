@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import type { UserRole } from '@/lib/auth/roles';
 
 interface NavLink {
   label: string;
@@ -22,9 +23,16 @@ const navLinks: NavLink[] = [
   { label: 'Usuários', href: '/adm/usuarios', icon: '👥' },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ role }: { role: UserRole }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const visibleLinks = role === 'admin'
+    ? navLinks
+    : navLinks.filter((link) => link.href !== '/adm' && (
+      role === 'doctor'
+        ? link.href === '/adm/agendamentos'
+        : ['/adm/agendamentos', '/adm/avaliacoes', '/adm/horarios', '/adm/indisponibilidades'].includes(link.href)
+    ));
 
   return (
     <>
@@ -44,7 +52,7 @@ export default function AdminSidebar() {
         w-64`}
       >
         <nav className="flex flex-col h-full pt-24 md:pt-8 px-4 md:px-6 gap-2">
-          {navLinks.map((link) => (
+          {visibleLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}

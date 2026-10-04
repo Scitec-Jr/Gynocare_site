@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appointmentsService } from '@/services/appointments.service';
 import { appointmentSchema } from '@/lib/validations/appointments';
-import { getSession } from '@/lib/auth/session';
+import { requireRoles } from '@/lib/auth/authorization';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const accessResponse = await requireRoles(['admin', 'doctor', 'secretary']);
+    if (accessResponse) return accessResponse;
+
     const { id } = await params;
     const appointment = await appointmentsService.getAppointmentById(parseInt(id));
 
@@ -27,14 +30,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autenticado' },
-        { status: 401 }
-      );
-    }
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const appointmentId = parseInt(id);
@@ -81,14 +78,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autenticado' },
-        { status: 401 }
-      );
-    }
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const appointmentId = parseInt(id);

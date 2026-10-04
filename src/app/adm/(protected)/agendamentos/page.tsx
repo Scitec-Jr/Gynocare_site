@@ -10,10 +10,13 @@ import Pagination from "@/components/admin/Pagination";
 import { FormField } from "@/components/admin/AdminForm";
 import { useAdminList } from "@/hooks/useAdminList";
 import { apiFetch, ApiRequestError, fetchAll } from "@/lib/admin/api";
+import { useAdminRole } from "@/components/admin/AdminRoleContext";
 import { Appointment, Doctor, Exam } from "@/lib/admin/types";
 import { formatDate, maskPhone } from "@/lib/admin/utils";
 
 export default function AppointmentsPage() {
+	const role = useAdminRole();
+	const isAdmin = role === "admin";
 	const {
 		data: appointments,
 		currentPage,
@@ -182,7 +185,7 @@ export default function AppointmentsPage() {
 			<AdminPageHeader
 				title="Agendamentos"
 				total={total}
-				action={{ label: "+ Novo Agendamento", onClick: openCreateModal }}
+				action={isAdmin ? { label: "+ Novo Agendamento", onClick: openCreateModal } : undefined}
 			/>
 
 			{error && <AdminAlert message={error} onDismiss={() => setError(null)} />}
@@ -202,8 +205,9 @@ export default function AppointmentsPage() {
 			<AdminTable
 				columns={columns}
 				data={appointments}
-				onEdit={openEditModal}
-				onDelete={openDeleteModal}
+				actions={isAdmin}
+				onEdit={isAdmin ? openEditModal : undefined}
+				onDelete={isAdmin ? openDeleteModal : undefined}
 				isLoading={isLoading}
 			/>
 

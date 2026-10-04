@@ -9,6 +9,7 @@ import Pagination from "@/components/admin/Pagination";
 import { FormField } from "@/components/admin/AdminForm";
 import { useAdminList } from "@/hooks/useAdminList";
 import { apiFetch, ApiRequestError } from "@/lib/admin/api";
+import { useAdminRole } from "@/components/admin/AdminRoleContext";
 import { Review } from "@/lib/admin/types";
 import { formatDate, truncateText } from "@/lib/admin/utils";
 
@@ -29,6 +30,9 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function ReviewsPage() {
+	const role = useAdminRole();
+	const isAdmin = role === "admin";
+	const isSecretary = role === "secretary";
 	const [statusFilter, setStatusFilter] = useState<string>("");
 
 	const extraParams = useMemo(
@@ -61,7 +65,25 @@ export default function ReviewsPage() {
 	const [formData, setFormData] = useState({ rating: 5, text: "", status: true });
 	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [approvingReviewId, setApprovingReviewId] = useState<number | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+	const handleApproveReview = async (review: Review) => {
+		setApprovingReviewId(review.id);
+		setError(null);
+		try {
+			await apiFetch(`/api/avaliacoes/${review.id}`, {
+				method: "PATCH",
+				body: JSON.stringify({ status: true }),
+			});
+			setSuccessMsg("Avaliação aprovada e publicada.");
+			refetch();
+		} catch (err) {
+			if (err instanceof ApiRequestError) setError(err.message);
+		} finally {
+			setApprovingReviewId(null);
+		}
+	};
 
 	const columns: TableColumn<Review>[] = [
 		{
@@ -80,12 +102,19 @@ export default function ReviewsPage() {
 		{
 			key: "status",
 			label: "Status",
-			render: (value) => (
+			render: (value, review) => isSecretary && !value ? (
+				<button
+					type="button"
+					onClick={() => handleApproveReview(review)}
+					disabled={approvingReviewId === review.id}
+					className="rounded-md bg-green-50 px-3 py-1.5 text-xs font-medium text-green-800 hover:bg-green-100 disabled:opacity-50"
+				>
+					{approvingReviewId === review.id ? "Aprovando..." : "Aprovar"}
+				</button>
+			) : (
 				<span
 					className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-						value
-							? "bg-green-100 text-green-700"
-							: "bg-amber-100 text-amber-700"
+						value ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
 					}`}
 				>
 					{value ? "Publicada" : "Pendente"}
@@ -194,9 +223,10 @@ export default function ReviewsPage() {
 			<AdminTable
 				columns={columns}
 				data={reviews}
+				actions={isAdmin || isSecretary}
 				onView={openViewModal}
-				onEdit={openEditModal}
-				onDelete={openDeleteModal}
+				onEdit={isAdmin ? openEditModal : undefined}
+				onDelete={isAdmin ? openDeleteModal : undefined}
 				isLoading={isLoading}
 			/>
 

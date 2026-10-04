@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appointmentsService } from '@/services/appointments.service';
 import { appointmentSchema } from '@/lib/validations/appointments';
+import { requireRoles } from '@/lib/auth/authorization';
+import { getSession } from '@/lib/auth/session';
 import { getSession } from '@/lib/auth/session';
 
 export async function GET(request: NextRequest) {
   try {
+    const accessResponse = await requireRoles(['admin', 'doctor', 'secretary']);
+    if (accessResponse) return accessResponse;
+
     // Parâmetros
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
@@ -28,6 +33,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (session) {
+      const accessResponse = await requireRoles(['admin']);
+      if (accessResponse) return accessResponse;
+    }
+
     const body = await request.json();
 
     console.log(appointmentSchema.safeParse(body))

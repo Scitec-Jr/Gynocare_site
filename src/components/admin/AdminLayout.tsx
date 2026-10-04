@@ -1,12 +1,15 @@
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
 import AdminFooter from './AdminFooter';
+import { AdminRoleProvider } from './AdminRoleContext';
+import type { UserRole } from '@/lib/auth/roles';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
   title?: string;
   subtitle?: string;
   userName?: string;
+  userRole: UserRole;
 }
 
 export default function AdminLayout({
@@ -14,10 +17,12 @@ export default function AdminLayout({
   title,
   subtitle,
   userName,
+  userRole,
 }: AdminLayoutProps) {
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
-      <AdminSidebar />
+    <AdminRoleProvider role={userRole}>
+      <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+      <AdminSidebar role={userRole} />
 
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader title={title} subtitle={subtitle} userName={userName} />
@@ -28,6 +33,7 @@ export default function AdminLayout({
 
         <AdminFooter />
       </div>
-    </div>
+      </div>
+    </AdminRoleProvider>
   );
 }

@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth/session';
+import { requireRoles } from '@/lib/auth/authorization';
 import { doctorScheduleSchema } from '@/lib/validations/doctor-schedules';
 import { doctorSchedulesService } from '@/services/doctor-schedules.service';
 
 export async function GET(request: NextRequest) {
-  if (!await getSession()) {
-    return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-  }
+  const accessResponse = await requireRoles(['admin', 'secretary']);
+  if (accessResponse) return accessResponse;
 
   const doctorId = Number(request.nextUrl.searchParams.get('doctorId'));
   if (!Number.isInteger(doctorId) || doctorId < 1) {
@@ -24,9 +23,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  if (!await getSession()) {
-    return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-  }
+  const accessResponse = await requireRoles(['admin', 'secretary']);
+  if (accessResponse) return accessResponse;
 
   const body: unknown = await request.json().catch(() => null);
   const validation = doctorScheduleSchema.safeParse(body);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth/session';
+import { requireRoles } from '@/lib/auth/authorization';
 import { doctorExamsSchema } from '@/lib/validations/doctor-exams';
 import { doctorExamsService } from '@/services/doctor-exams.service';
 
@@ -14,9 +14,8 @@ async function readDoctorId(context: RouteContext): Promise<number | null> {
 }
 
 export async function GET(_request: NextRequest, context: RouteContext) {
-  if (!await getSession()) {
-    return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-  }
+  const accessResponse = await requireRoles(['admin']);
+  if (accessResponse) return accessResponse;
 
   const doctorId = await readDoctorId(context);
   if (!doctorId) {
@@ -33,9 +32,8 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 }
 
 export async function PUT(request: NextRequest, context: RouteContext) {
-  if (!await getSession()) {
-    return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-  }
+  const accessResponse = await requireRoles(['admin']);
+  if (accessResponse) return accessResponse;
 
   const doctorId = await readDoctorId(context);
   if (!doctorId) {

@@ -56,6 +56,13 @@ export const reviewsRepository = {
     return result.affectedRows > 0;
   },
 
+  async updateStatus(id: number, status: boolean): Promise<void> {
+    await execute(
+      'UPDATE Avaliacao SET Status = ?, Atualizado_em = NOW() WHERE Id = ?',
+      [status, id]
+    );
+  },
+
   async delete(id: number): Promise<boolean> {
     const result = await execute(
       'DELETE FROM Avaliacao WHERE Id = ?',

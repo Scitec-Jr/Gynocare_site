@@ -7,4 +7,8 @@ export const reviewSchema = z.object({
   status: z.boolean().default(true),
 });
 
+export const reviewApprovalSchema = z.object({
+  status: z.literal(true),
+});
+
 export type ReviewRequest = z.infer<typeof reviewSchema>;

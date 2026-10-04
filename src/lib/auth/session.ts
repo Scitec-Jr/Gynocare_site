@@ -1,16 +1,11 @@
 import { cookies } from 'next/headers';
+import { createSessionToken, readSessionToken, type SessionClaims } from '@/lib/auth/session-token';
+import type { UserRole } from '@/lib/auth/roles';
 
 export const SESSION_COOKIE_NAME = 'gynocare-session';
 export const SESSION_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 horas
 
-export interface Session {
-  userId: number;
-  email: string;
-  name: string;
-  role: 'admin' | 'doctor' | 'secretary';
-  iat: number;
-  exp: number;
-}
+export interface Session extends SessionClaims {}
 
 export async function createSessionCookie(
   sessionData: Omit<Session, 'iat' | 'exp'>
@@ -25,7 +20,7 @@ export async function createSessionCookie(
   const cookieStore = await cookies();
   
   // Simular JWT com JSON (seguro porque está em HTTP Only cookie)
-  const sessionToken = Buffer.from(JSON.stringify(session)).toString('base64');
+  const sessionToken = createSessionToken(session);
   
   cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
     httpOnly: true,
@@ -47,12 +42,8 @@ export async function getSession(): Promise<Session | null> {
       return null;
     }
 
-    const session = JSON.parse(
-      Buffer.from(sessionToken, 'base64').toString('utf-8')
-    ) as Session;
-
-    // Verificar expiração
-    if (session.exp < Math.floor(Date.now() / 1000)) {
+    const session = readSessionToken(sessionToken);
+    if (!session) {
       await deleteSession();
       return null;
     }
@@ -73,3 +64,5 @@ export async function validateSession(): Promise<boolean> {
   const session = await getSession();
   return session !== null;
 }
+
+export type { UserRole };

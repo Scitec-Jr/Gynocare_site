@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { doctorsService } from '@/services/doctors.service';
 import { doctorSchema } from '@/lib/validations/doctors';
-import { getSession } from '@/lib/auth/session';
+import { requireRoles } from '@/lib/auth/authorization';
 
 export async function GET(
   request: NextRequest,
@@ -27,14 +27,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autenticado' },
-        { status: 401 }
-      );
-    }
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const doctorId = parseInt(id);
@@ -77,14 +71,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autenticado' },
-        { status: 401 }
-      );
-    }
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const doctorId = parseInt(id);

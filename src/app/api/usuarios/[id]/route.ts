@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { usersService } from '@/services/users.service';
 import { userUpdateSchema } from '@/lib/validations/auth';
-import { getSession } from '@/lib/auth/session';
+import { requireRoles } from '@/lib/auth/authorization';
 import { hashPassword } from '@/lib/auth/passwords';
 import { usersRepository } from '@/repositories/users.repository';
 
@@ -10,6 +10,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
+
     const { id } = await params;
     const user = await usersService.getUserById(parseInt(id));
 
@@ -29,14 +32,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autenticado' },
-        { status: 401 }
-      );
-    }
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const userId = parseInt(id);
@@ -84,14 +81,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Não autenticado' },
-        { status: 401 }
-      );
-    }
+    const accessResponse = await requireRoles(['admin']);
+    if (accessResponse) return accessResponse;
 
     const { id } = await params;
     const userId = parseInt(id);

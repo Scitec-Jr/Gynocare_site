@@ -50,6 +50,14 @@ export class ReviewsService {
     return { id, rating, text, status };
   }
 
+  async approveReview(id: number) {
+    const review = await reviewsRepository.findById(id);
+    if (!review) throw new Error('Avaliação não encontrada');
+
+    await reviewsRepository.updateStatus(id, true);
+    return { id, status: true };
+  }
+
   async deleteReview(id: number) {
     const success = await reviewsRepository.delete(id);
     if (!success) {

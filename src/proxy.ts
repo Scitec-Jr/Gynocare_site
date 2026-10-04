@@ -1,40 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { canAccessAdminPath, roleHome } from '@/lib/auth/roles';
+import { readSessionToken } from '@/lib/auth/session-token';
 
 export function proxy(request: NextRequest) {
-  // Verificar se é uma rota protegida
-  if (request.nextUrl.pathname.startsWith('/adm/')) {
-    // Excluir a página de login
-    if (request.nextUrl.pathname === '/adm/login') {
-      return NextResponse.next();
-    }
+  const pathname = request.nextUrl.pathname;
+  if (pathname !== '/adm' && !pathname.startsWith('/adm/')) return NextResponse.next();
+  if (pathname === '/adm/login') return NextResponse.next();
 
-    // Verificar se existe sessão
-    const sessionCookie = request.cookies.get('gynocare-session');
-    if (!sessionCookie) {
-      // Redirecionar para login
-      return NextResponse.redirect(new URL('/adm/login', request.url));
-    }
+  const sessionCookie = request.cookies.get('gynocare-session');
+  const session = sessionCookie ? readSessionToken(sessionCookie.value) : null;
+  if (!session) return NextResponse.redirect(new URL('/adm/login', request.url));
 
-    // Tentar decodificar a sessão para validar
-    try {
-      const session = JSON.parse(
-        Buffer.from(sessionCookie.value, 'base64').toString('utf-8')
-      );
-
-      // Verificar expiração
-      if (session.exp < Math.floor(Date.now() / 1000)) {
-        // Sessão expirada, redirecionar para login
-        return NextResponse.redirect(new URL('/adm/login', request.url));
-      }
-    } catch (error) {
-      // Erro ao decodificar sessão, redirecionar para login
-      return NextResponse.redirect(new URL('/adm/login', request.url));
-    }
+  if (!canAccessAdminPath(session.role, pathname)) {
+    return NextResponse.redirect(new URL(roleHome[session.role], request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/adm/:path*'],
+  matcher: ['/adm', '/adm/:path*'],
 };
