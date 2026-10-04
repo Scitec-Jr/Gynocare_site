@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect, type ReactNode } from "react";
 import Image from "next/image";
 
 type Mensagem = {
@@ -9,6 +9,22 @@ type Mensagem = {
 	remetente: "usuario" | "bot";
 	timestamp: Date;
 };
+
+function renderizarTextoComLinks(texto: string): ReactNode[] {
+	return texto.split(/(https?:\/\/\S+)/gi).flatMap((parte, index) => {
+		if (!/^https?:\/\//i.test(parte)) return [parte];
+
+		const url = parte.replace(/[.,!?;:]+$/, "");
+		const pontuacao = parte.slice(url.length);
+
+		return [
+			<a key={`link-${index}`} href={url} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-2">
+				{url}
+			</a>,
+			pontuacao,
+		];
+	});
+}
 
 export default function Chat() {
 	const [aberto, setAberto] = useState(false);
@@ -104,7 +120,7 @@ export default function Chat() {
 							{mensagens.map((msg) => (
 								<div key={msg.id} className={`flex ${msg.remetente === "usuario" ? "justify-end" : "justify-start"}`}>
 									<div className={`max-w-[85%] sm:max-w-xs px-3 sm:px-4 py-2 rounded-lg text-sm whitespace-pre-wrap ${msg.remetente === "usuario" ? "bg-(--main-color) text-white rounded-br-none" : "bg-slate-100 text-slate-900 rounded-bl-none"}`}>
-										<p>{msg.texto}</p>
+										<p>{renderizarTextoComLinks(msg.texto)}</p>
 										<p className="text-xs opacity-70 mt-1">
 											{msg.timestamp.toLocaleTimeString("pt-BR", {
 												hour: "2-digit",
