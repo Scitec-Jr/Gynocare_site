@@ -1,6 +1,20 @@
 import { reviewsRepository } from '@/repositories/reviews.repository';
 
 export class ReviewsService {
+  async createPendingReview(rating: number, text: string) {
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      throw new Error('Avaliação deve estar entre 1 e 5');
+    }
+
+    const normalizedText = text.trim();
+    if (!normalizedText || normalizedText.length > 500) {
+      throw new Error('A avaliação deve ter entre 1 e 500 caracteres');
+    }
+
+    const id = await reviewsRepository.createPending(rating, normalizedText);
+    return { id, rating, text: normalizedText, status: false };
+  }
+
   async getAllReviews(limit: number = 10, offset: number = 0, status?: boolean) {
     const reviews = await reviewsRepository.findAll(limit, offset, status);
     const total = await reviewsRepository.countAll(status);

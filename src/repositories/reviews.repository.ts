@@ -48,6 +48,14 @@ export const reviewsRepository = {
     );
   },
 
+  async createPending(rating: number, text: string): Promise<number> {
+    const result = await execute(
+      'INSERT INTO Avaliacao (Nota, Texto, Status) VALUES (?, ?, FALSE)',
+      [rating, text]
+    );
+    return result.insertId;
+  },
+
   async update(id: number, rating: number, text: string | null, status: boolean): Promise<boolean> {
     const result = await execute(
       `UPDATE Avaliacao SET Nota = ?, Texto = ?, Status = ?, Atualizado_em = NOW() WHERE Id = ?`,

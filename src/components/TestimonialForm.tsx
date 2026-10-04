@@ -36,9 +36,8 @@ export default function TestimonialForm({ isOpen, onClose, onSuccess }: Testimon
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					nota,
-					texto,
-					status: 0,
+					rating: nota,
+					text: texto,
 				}),
 			});
 
