@@ -13,6 +13,7 @@ interface NavLink {
 const navLinks: NavLink[] = [
   { label: 'Dashboard', href: '/adm', icon: '📊' },
   { label: 'Médicos', href: '/adm/medicos', icon: '👨‍⚕️' },
+  { label: 'Horários', href: '/adm/horarios', icon: '🕒' },
   { label: 'Indisponibilidades', href: '/adm/indisponibilidades', icon: '🚫' },
   { label: 'Exames', href: '/adm/exames', icon: '🔬' },
   { label: 'Procedimentos', href: '/adm/procedimentos', icon: '⚕️' },
