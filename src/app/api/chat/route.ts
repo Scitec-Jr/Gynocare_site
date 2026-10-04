@@ -9,7 +9,10 @@ export async function POST(request: NextRequest) {
 		body === null ||
 		!("message" in body) ||
 		typeof body.message !== "string" ||
-		!body.message.trim()
+		!body.message.trim() ||
+		body.message.length > 1000 ||
+		("context" in body && typeof body.context !== "string") ||
+		("context" in body && typeof body.context === "string" && body.context.length > 1200)
 	) {
 		return NextResponse.json(
 			{ error: "Envie uma mensagem válida." },
@@ -18,7 +21,10 @@ export async function POST(request: NextRequest) {
 	}
 
 	try {
-		const response = await gerarRespostaChat(body.message);
+		const contextoAssistente = "context" in body && typeof body.context === "string"
+			? body.context
+			: undefined;
+		const response = await gerarRespostaChat(body.message, contextoAssistente);
 		return NextResponse.json({ response });
 	} catch (error) {
 		console.error("Erro ao gerar resposta do chat:", error);

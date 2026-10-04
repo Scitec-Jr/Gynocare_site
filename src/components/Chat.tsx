@@ -46,12 +46,13 @@ export default function Chat() {
 		setMensagens((prev) => [...prev, novaMensagemUsuario]);
 		setInputMensagem("");
 		setEnviando(true);
+		const ultimaRespostaAssistente = [...mensagens].reverse().find((mensagem) => mensagem.remetente === "bot")?.texto;
 
 		try {
 			const response = await fetch("/api/chat", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ message: mensagemUsuarioAtual }),
+				body: JSON.stringify({ message: mensagemUsuarioAtual, context: ultimaRespostaAssistente }),
 			});
 			const resultado = await response.json();
 
@@ -127,12 +128,15 @@ export default function Chat() {
 							<div ref={messagesEndRef} />
 						</div>
 
-						<div className="border-t border-slate-200 p-3 sm:p-4 flex gap-2 shrink-0 bg-white rounded-b-2xl sm:rounded-b-lg">
-							<input type="text" value={inputMensagem} onChange={(e) => setInputMensagem(e.target.value)} onKeyUp={(e) => e.key === "Enter" && enviarMensagem()} placeholder="Digite..." className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:border-(--main-color) focus:outline-none text-sm focus:ring-1 focus:ring-(--main-color)/20 text-black" disabled={enviando} />
-							<button onClick={enviarMensagem} disabled={enviando || !inputMensagem.trim()} className="bg-(--main-color) text-white px-3 sm:px-4 py-2 rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium active:scale-95 cursor-pointer">
-								<span className="hidden sm:inline">Enviar</span>
-								<span className="sm:hidden">➤</span>
-							</button>
+						<div className="border-t border-slate-200 p-3 sm:p-4 shrink-0 bg-white rounded-b-2xl sm:rounded-b-lg">
+							<div className="flex gap-2">
+								<input type="text" value={inputMensagem} onChange={(e) => setInputMensagem(e.target.value)} onKeyUp={(e) => e.key === "Enter" && enviarMensagem()} placeholder="Digite..." className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:border-(--main-color) focus:outline-none text-sm focus:ring-1 focus:ring-(--main-color)/20 text-black" disabled={enviando} />
+								<button onClick={enviarMensagem} disabled={enviando || !inputMensagem.trim()} className="bg-(--main-color) text-white px-3 sm:px-4 py-2 rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium active:scale-95 cursor-pointer">
+									<span className="hidden sm:inline">Enviar</span>
+									<span className="sm:hidden">➤</span>
+								</button>
+							</div>
+							<p className="mt-2 text-[10px] leading-4 text-slate-500">Este chat usa IA de terceiros para dúvidas administrativas. Não envie sintomas, resultados de exames ou dados pessoais. Para questões clínicas, fale com a equipe da clínica.</p>
 						</div>
 					</div>
 				</div>
