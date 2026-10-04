@@ -9,7 +9,7 @@ import SearchBar from "@/components/admin/SearchBar";
 import Pagination from "@/components/admin/Pagination";
 import { FormField } from "@/components/admin/AdminForm";
 import { useAdminList } from "@/hooks/useAdminList";
-import { apiFetch, ApiRequestError } from "@/lib/admin/api";
+import { apiFetch, ApiRequestError, fetchAll } from "@/lib/admin/api";
 import { Doctor, Exam } from "@/lib/admin/types";
 import { formatDate } from "@/lib/admin/utils";
 
